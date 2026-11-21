@@ -1,0 +1,2467 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第七场 · 短片合作平台</title>
+<style>
+  :root{
+    --bg:#080C0B; --panel:#0E1513; --panel2:#121B18; --panel3:#0A100E;
+    --line:rgba(230,237,233,.10); --line2:rgba(230,237,233,.18);
+    --ink:#E6EDE9; --dim:#93A29B; --dimmer:#7F8E87;
+    --mint:#6FE3A8; --sand:#C8A46A; --red:#E4572E;
+    --mono:ui-monospace,"Cascadia Mono","SF Mono",Consolas,monospace;
+    --sans:"Noto Sans SC","Source Han Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+  input,textarea,select{font:inherit}
+  img{display:block}
+
+  /* bar */
+  .bar{height:56px;display:flex;align-items:center;gap:16px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .brand{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap}
+  .brand i{width:9px;height:9px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px rgba(111,227,168,.7)}
+  .brand span{color:#9BA9A2;font-weight:500;font-size:12px;letter-spacing:.05em}
+  .role{display:flex;border:1px solid var(--line2);border-radius:3px;overflow:hidden;margin-left:6px}
+  .role button{padding:6px 12px;font-size:12px;color:var(--dim)}
+  .role button[aria-pressed="true"]{background:var(--panel2);color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--mint)}
+  .bar .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .ghost{font-size:12px;color:var(--dim);white-space:nowrap}
+  .solid{font-size:12px;font-weight:700;color:#04120C;background:var(--mint);padding:8px 14px;border-radius:3px;white-space:nowrap}
+  .solid.line{background:none;color:var(--mint);border:1px solid rgba(111,227,168,.55)}
+
+  /* shell */
+  .shell{display:grid;grid-template-columns:208px 1fr;height:calc(100vh - 56px);min-height:0}
+  .rail{border-right:1px solid var(--line);background:var(--panel);padding:16px 0;overflow-y:auto}
+  .rail h2{margin:0 0 8px;padding:0 16px;font-size:11px;letter-spacing:.2em;color:var(--dimmer);font-weight:600}
+  .rail nav{display:flex;flex-direction:column;margin-bottom:20px}
+  .nav-i{display:flex;justify-content:space-between;align-items:center;padding:9px 16px;font-size:12.5px;color:var(--dim);border-left:2px solid transparent;gap:8px}
+  .nav-i b{font-family:var(--mono);font-size:11px;color:var(--dimmer);font-weight:400}
+  .nav-i:hover{color:var(--ink);background:rgba(255,255,255,.02)}
+  .nav-i[aria-pressed="true"]{color:var(--ink);background:var(--panel2);border-left-color:var(--mint);font-weight:600}
+  .nav-i[aria-pressed="true"] b{color:var(--mint)}
+  .rail .role{margin:0;width:100%;display:flex}
+  .rail .role button{flex:1;text-align:center;padding:6px 4px;font-size:11.5px}
+  .rail .who{padding:12px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--dimmer);line-height:1.9}
+  .rail .who b{color:var(--sand);font-weight:600}
+
+  /* stage */
+  .stage{overflow-y:auto;padding:20px 26px 44px}
+  .head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+  .head h1{margin:0;font-size:19px;font-weight:700}
+  .head .count{font-family:var(--mono);font-size:11.5px;color:var(--dimmer)}
+  .head .right{margin-left:auto;font-size:11.5px;color:var(--dimmer)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:18px}
+  .card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden;transition:border-color .16s,transform .16s}
+  .card:hover{border-color:rgba(111,227,168,.45);transform:translateY(-2px)}
+  .cover{position:relative;aspect-ratio:16/10;background:var(--panel3);overflow:hidden}
+  .cover img{width:100%;height:100%;object-fit:cover;opacity:.92}
+  .cover .tag{position:absolute;left:10px;top:10px;font-family:var(--mono);font-size:11px;color:#EAF6F0;background:rgba(8,12,11,.62);border:1px solid rgba(230,237,233,.16);border-radius:2px;padding:2px 6px}
+  .meta{padding:12px 14px 13px}
+  .meta h3{margin:0;font-size:14.5px;font-weight:600}
+  .meta .row{display:flex;gap:7px;align-items:center;margin-top:6px;font-size:11.5px;color:var(--dim);flex-wrap:wrap}
+  .meta .row i{font-style:normal;color:var(--dimmer)}
+  .meta .price{margin-top:9px;display:flex;align-items:baseline;gap:7px;font-size:12px;color:var(--dim)}
+  .meta .price b{font-size:15px;color:var(--ink);font-weight:700;font-family:var(--mono)}
+  .meta .price span{font-size:11px;color:var(--dimmer)}
+
+  /* case detail */
+  .back{display:inline-flex;gap:7px;font-size:12px;color:var(--dim);margin-bottom:14px}
+  .back:hover{color:var(--ink)}
+  .dhead{display:flex;align-items:flex-end;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+  .dhead h2{margin:0;font-size:24px;font-weight:700}
+  .dhead .sub{font-size:12px;color:var(--dim);margin-bottom:3px}
+  .dhead .acts{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .dbody{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start;margin-top:16px}
+  .sb-head{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+  .sb-head h3{margin:0;font-size:12px;letter-spacing:.16em;color:var(--dimmer);font-weight:600}
+  .sb-head .hint{margin-left:auto;font-size:11px;color:var(--dimmer)}
+  .shot{display:grid;grid-template-columns:42px 82px 1fr 52px;gap:11px;align-items:center;width:100%;
+        padding:8px 10px 8px 8px;border-bottom:1px solid rgba(230,237,233,.07);border-left:2px solid transparent}
+  .shot:hover{background:rgba(255,255,255,.025)}
+  .shot[aria-current="true"]{background:var(--panel2);border-left-color:var(--mint)}
+  .shot .no{font-family:var(--mono);font-size:11px;color:var(--dimmer)}
+  .shot[aria-current="true"] .no{color:var(--mint)}
+  .thumb{width:82px;height:47px;border-radius:2px;overflow:hidden;background:var(--panel3);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .thumb span{font-family:var(--mono);font-size:11px;color:var(--dimmer)}
+  .shot .txt b{display:block;font-size:12.5px;font-weight:600}
+  .shot .txt em{display:block;font-style:normal;font-size:11.5px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:500px}
+  .shot .dur{font-family:var(--mono);font-size:11px;color:var(--dim);text-align:right}
+
+  /* quote card */
+  .quote{margin-top:22px;border:1px solid rgba(111,227,168,.28);border-radius:4px;background:linear-gradient(180deg,rgba(111,227,168,.05),transparent 60%)}
+  .q-top{display:flex;align-items:flex-end;gap:14px;padding:14px 16px 12px;border-bottom:1px solid rgba(230,237,233,.08);flex-wrap:wrap}
+  .q-top .k{font-size:11px;letter-spacing:.16em;color:var(--dimmer)}
+  .q-top strong{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .q-top strong i{font-style:normal;font-size:12px;font-weight:500;color:var(--dim);margin-left:3px}
+  .q-top .spec{margin-left:auto;font-size:11.5px;color:var(--dim);text-align:right;line-height:1.7}
+  .q-items{display:grid;grid-template-columns:repeat(5,1fr);gap:0;padding:0}
+  .qi{padding:11px 14px;border-right:1px solid rgba(230,237,233,.07)}
+  .qi:last-child{border-right:0}
+  .qi span{display:block;font-size:11px;color:var(--dimmer)}
+  .qi b{display:block;font-family:var(--mono);font-size:12.5px;margin-top:3px}
+  .q-flow{display:flex;align-items:center;gap:8px;padding:11px 16px;border-top:1px solid rgba(230,237,233,.07);font-size:11.5px;color:var(--dim);flex-wrap:wrap}
+  .q-flow b{color:var(--ink);font-weight:600}
+  .q-flow i{font-style:normal;color:var(--dimmer)}
+  .q-act{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid rgba(230,237,233,.07)}
+  .q-act .note{font-size:11px;color:var(--dimmer);line-height:1.6}
+
+  /* comments */
+  .cmt{margin-top:24px}
+  .cmt h3{margin:0 0 10px;font-size:12px;letter-spacing:.16em;color:var(--dimmer);font-weight:600}
+  .cmt-list{display:flex;flex-direction:column;gap:0}
+  .cmt-i{padding:11px 0;border-bottom:1px solid rgba(230,237,233,.07)}
+  .cmt-i .who{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--dim);margin-bottom:5px}
+  .cmt-i .who b{color:var(--ink);font-weight:600}
+  .cmt-i .who .badge{font-family:var(--mono);font-size:11px;color:var(--mint);border:1px solid rgba(111,227,168,.4);border-radius:2px;padding:1px 5px}
+  .cmt-i p{margin:0;font-size:12.5px;color:#C8D3CE;line-height:1.75}
+  .cmt-i.reply{margin-left:18px;border-left:1px solid rgba(111,227,168,.25);padding-left:14px}
+  .cmt-form{margin-top:14px;border:1px solid var(--line);border-radius:4px;padding:12px;background:var(--panel)}
+  .cmt-form textarea{width:100%;min-height:64px;resize:vertical;background:var(--panel3);border:1px solid var(--line);border-radius:3px;padding:9px 10px;color:var(--ink);font-size:12.5px;outline:0}
+  .cmt-form textarea:focus{border-color:rgba(111,227,168,.5)}
+  .cmt-form .foot{display:flex;align-items:center;gap:10px;margin-top:9px}
+  .cmt-form .foot span{margin-left:auto;font-size:11px;color:var(--dimmer)}
+
+  /* prompt panel */
+  .panel{border:1px solid var(--line);border-radius:4px;background:var(--panel);padding:14px 16px 16px;position:sticky;top:0}
+  .panel h3{margin:0;font-size:12px;letter-spacing:.16em;color:var(--dimmer);font-weight:600}
+  .panel .ph{display:flex;align-items:baseline;gap:8px;margin:2px 0 10px}
+  .panel .ph b{font-size:14px;font-weight:600}
+  .panel .ph span{font-family:var(--mono);font-size:11px;color:var(--mint)}
+  .kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid rgba(230,237,233,.06);font-size:11.5px}
+  .kv k{color:var(--dim)}
+  .kv v{font-family:var(--mono);font-size:11px;color:#D6E2DC}
+  .lbl{margin:13px 0 6px;font-size:11px;letter-spacing:.14em;color:var(--dimmer)}
+  .prompt{margin:0;background:var(--panel3);border:1px solid var(--line);border-radius:3px;padding:10px 11px;
+          font-family:var(--mono);font-size:11px;line-height:1.85;color:#B9C7C1;white-space:pre-wrap;word-break:break-word}
+  .neg{color:#9AA7A1;font-size:11px;line-height:1.8;padding:9px 11px;border:1px dashed rgba(230,237,233,.12);border-radius:3px;background:rgba(200,164,106,.05)}
+  .copy{width:100%;margin-top:12px;background:var(--panel2);border:1px solid var(--line2);border-radius:3px;padding:8px;text-align:center;font-size:12px;font-weight:600}
+  .copy:hover{border-color:var(--mint);color:var(--mint)}
+
+  /* rfq */
+  .rfq{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:4px;background:var(--panel);margin-bottom:12px;transition:border-color .16s}
+  .rfq:hover{border-color:rgba(111,227,168,.4)}
+  .rfq h3{margin:0;font-size:14.5px;font-weight:600}
+  .rfq .row{display:flex;gap:8px;align-items:center;margin-top:5px;font-size:11.5px;color:var(--dim);flex-wrap:wrap}
+  .rfq .row i{font-style:normal;color:var(--dimmer)}
+  .rfq .row .b{color:var(--sand)}
+  .rfq .side2{text-align:right;font-size:11px;color:var(--dimmer);line-height:1.8}
+  .rfq .side2 b{display:block;font-family:var(--mono);font-size:13px;color:var(--ink)}
+  .empty{padding:26px 0;font-size:12.5px;color:var(--dimmer)}
+
+  .desc{border:1px solid var(--line);border-radius:4px;padding:14px 16px;background:var(--panel);font-size:12.5px;line-height:1.85;color:#C8D3CE}
+  .desc b{color:var(--ink)}
+  .bid{display:grid;grid-template-columns:1fr auto;gap:12px;padding:12px 0;border-bottom:1px solid rgba(230,237,233,.07)}
+  .bid .who{display:flex;gap:8px;align-items:center;font-size:12.5px;flex-wrap:wrap}
+  .bid .who b{font-weight:600;cursor:pointer;border-bottom:1px dashed rgba(230,237,233,.25)}
+  .bid .who b:hover{color:var(--mint);border-bottom-color:var(--mint)}
+  .bid .who span{font-size:11px;color:var(--dimmer);font-family:var(--mono)}
+  .lnk{margin-left:auto;font-size:11px;color:var(--mint);white-space:nowrap}
+  .lnk:hover{text-decoration:underline}
+  /* creator wall */
+  .modal.wide{width:min(760px,100%)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 4px}
+  .stats div{background:var(--panel3);border:1px solid var(--line);border-radius:3px;padding:9px 11px;font-size:11px;color:var(--dimmer)}
+  .stats b{display:block;font-family:var(--mono);font-size:15px;color:var(--ink);margin-top:2px}
+  .wall{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+  .wall figure{margin:0}
+  .wall img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:2px;display:block}
+  .wall figcaption{font-size:11px;color:var(--dim);margin-top:5px;line-height:1.5}
+  .rec{display:grid;grid-template-columns:1fr auto auto;gap:10px;font-size:11.5px;color:var(--dim);padding:7px 0;border-bottom:1px solid rgba(230,237,233,.06)}
+  .rec b{color:var(--ink);font-weight:600}
+  .rec em{font-style:normal;color:var(--mint)}
+  .rec s{text-decoration:none;color:var(--sand)}
+  .bid .who{display:flex;gap:8px;align-items:center;font-size:12.5px}
+  .bid .who b{font-weight:600}
+  .bid .who span{font-size:11px;color:var(--dimmer);font-family:var(--mono)}
+  .bid .note{font-size:11.5px;color:var(--dim);margin-top:4px;line-height:1.7}
+  .bid .money{text-align:right}
+  .bid .money b{display:block;font-family:var(--mono);font-size:15px}
+  .bid .money span{font-size:11px;color:var(--dimmer)}
+
+  /* modal */
+  .mask{position:fixed;inset:0;background:rgba(4,8,7,.72);display:flex;align-items:center;justify-content:center;padding:24px;z-index:20}
+  .modal{width:min(560px,100%);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid var(--line2);border-radius:5px;padding:20px}
+  .modal h2{margin:0 0 4px;font-size:17px}
+  .modal .sub{font-size:11.5px;color:var(--dim);margin-bottom:16px}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:11px;letter-spacing:.1em;color:var(--dimmer);margin-bottom:5px}
+  .field input,.field select,.field textarea{width:100%;background:var(--panel3);border:1px solid var(--line);border-radius:3px;padding:8px 10px;color:var(--ink);font-size:12.5px;outline:0}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(111,227,168,.5)}
+  .field textarea{min-height:76px;resize:vertical}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .modal .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+
+  .steps.row{display:flex;gap:10px}
+  .steps.row .step{flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:3px;background:var(--panel)}
+  .steps.row .step.on{border-color:rgba(111,227,168,.5);color:var(--mint)}
+  .steps.row .step.done{border-color:rgba(111,227,168,.25)}
+  .unread{display:inline-block;min-width:16px;height:16px;line-height:16px;text-align:center;border-radius:9px;
+    background:#E4572E;color:#fff;font-size:10px;font-weight:700;margin-left:6px;padding:0 4px;vertical-align:1px}
+  .deliverbox{border:1px solid var(--line);border-radius:5px;background:var(--panel);overflow:hidden;margin-bottom:16px}
+  .deliverbox .dh{display:flex;gap:12px;align-items:baseline;padding:12px 16px;border-bottom:1px solid var(--line)}
+  .deliverbox .dh h3{margin:0;font-size:14px}
+  .deliverbox .wm{margin-left:auto;font-size:11px;color:#C8A46A}
+  .deliverbox .df{display:flex;gap:12px;align-items:center;padding:12px 16px;font-size:12px;color:var(--dim)}
+  .deliverbox .df .lock{color:#C8A46A}
+  .deliverbox .dl{background:var(--mint);color:#04120C;font-weight:700;border-radius:3px;padding:8px 16px;font-size:12.5px}  .chatcard{margin-top:20px;border:1px solid var(--line);border-radius:5px;background:var(--panel);overflow:hidden}
+  .chat-head{display:flex;align-items:baseline;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .chat-head h3{margin:0;font-size:14px}
+  .chat-head .hint{margin-left:auto;font-size:11px;color:#7F8E87}
+  .chat-list{max-height:360px;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+  .msg{border:1px solid var(--line);border-radius:4px;padding:9px 12px;background:var(--panel2);max-width:78%}
+  .msg.me{align-self:flex-end;border-color:rgba(111,227,168,.3);background:rgba(111,227,168,.06)}
+  .msg .mb{display:flex;gap:8px;align-items:baseline;font-size:11px;color:#7F8E87;margin-bottom:4px}
+  .msg .mb b{color:var(--ink);font-size:12px;font-weight:600}
+  .msg .mt{font-size:12.5px;line-height:1.75;color:var(--ink);white-space:pre-wrap}
+  .msg .mf{margin-top:6px;display:block}
+  .msg .mf img{max-width:220px;border-radius:3px;border:1px solid var(--line)}
+  .msg .mf.link{font-size:12px;color:var(--mint)}
+  .chat-in{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--panel3)}
+  .chat-in input#chatText{flex:1;background:var(--panel);border:1px solid var(--line2);border-radius:3px;
+    padding:9px 12px;color:var(--ink);font-size:12.5px;outline:0}
+  .chat-in input#chatText:focus{border-color:rgba(111,227,168,.5)}
+  .chat-in .att{border:1px solid var(--line2);border-radius:3px;padding:0 12px;font-size:12px;color:var(--dim)}
+  .chat-in .send{border-radius:3px;padding:0 18px;font-size:12.5px;font-weight:700;background:var(--mint);color:#04120C}  .splitbox{border:1px solid rgba(111,227,168,.28);border-radius:5px;background:rgba(111,227,168,.04);padding:12px;margin-bottom:14px}
+  .sb-h{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .sb-h h4{margin:0;font-size:13px;color:var(--mint)}
+  .sb-h span{font-size:11px;color:#7F8E87}
+  .sb-grid{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+  .sb-grid figure{margin:0;flex:0 0 132px}
+  .sb-grid .shnote{width:132px;box-sizing:border-box;margin-top:4px;background:var(--panel3);border:1px solid var(--line);border-radius:3px;padding:4px 6px;color:var(--ink);font-size:11px;outline:0}
+  .sb-grid .shprompt{resize:vertical;min-height:38px;margin-top:4px;font-family:inherit}
+  .sb-grid .shnote:focus{border-color:rgba(111,227,168,.5)}
+  .sb-grid img{width:108px;height:61px;object-fit:cover;border-radius:3px;border:1px solid var(--line)}
+  .sb-grid figcaption{display:flex;justify-content:space-between;font-size:11px;color:#8E9C95;font-family:var(--mono);margin-top:3px}
+  .sb-grid figcaption b{color:var(--mint);font-weight:600}  .qrbox{width:168px;height:168px;border:1px solid var(--line2);border-radius:4px;background:#fff;padding:10px;display:grid;place-items:center}
+  .qrgrid{width:100%;height:100%;background:
+    repeating-conic-gradient(#0B0B0C 0% 25%, #fff 0% 50%) 50%/14px 14px;
+    border-radius:2px;opacity:.88}
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);background:var(--mint);color:#04120C;font-size:12px;font-weight:700;padding:9px 16px;border-radius:3px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30}
+  #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  [hidden]{display:none !important}
+
+  /* upload */
+  /* film player */
+  .filmwrap{margin-bottom:16px;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#000}
+  .filmwrap video{width:100%;display:block;aspect-ratio:16/9;background:#000}
+  .filmbar{display:flex;gap:10px;align-items:center;padding:8px 12px;font-size:11.5px;color:var(--dim);background:var(--panel);border-top:1px solid var(--line)}
+  .filmbar #filmNow{font-family:var(--mono);color:var(--mint);font-size:11.5px}
+  .shot .no em{display:block;font-style:normal;font-size:11px;color:var(--dimmer);margin-top:1px}
+
+  .drop{border:1px dashed rgba(230,237,233,.28);border-radius:6px;background:var(--panel);padding:34px 20px;text-align:center;transition:border-color .16s,background .16s}
+  .drop:hover,.drop.over{border-color:rgba(111,227,168,.6);background:rgba(111,227,168,.04)}
+  .drop b{display:block;font-size:14px;margin-bottom:6px}
+  .drop span{font-size:11.5px;color:var(--dimmer)}
+  .drop .pick{display:inline-flex;margin-top:14px;padding:8px 16px;border:1px solid rgba(111,227,168,.55);color:var(--mint);border-radius:3px;font-size:12.5px;font-weight:600}
+  .steps{margin-top:16px;border:1px solid var(--line);border-radius:4px;background:var(--panel);padding:14px 16px}
+  .steps .bar{height:3px;background:rgba(230,237,233,.10);border-radius:2px;overflow:hidden;margin-bottom:12px}
+  .steps .bar i{display:block;height:100%;width:0;background:var(--mint);transition:width .35s ease}
+  .step{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--dimmer);padding:4px 0}
+  .step.on{color:var(--ink)}
+  .step .tick{width:14px;height:14px;border-radius:50%;border:1px solid rgba(230,237,233,.22);display:inline-block;flex:0 0 14px}
+  .step.done .tick{background:var(--mint);border-color:var(--mint)}
+  .step.done{color:var(--dim)}
+  .result{margin-top:16px;border:1px solid rgba(111,227,168,.3);border-radius:4px;background:linear-gradient(180deg,rgba(111,227,168,.05),transparent);padding:16px}
+  .result h3{margin:0 0 10px;font-size:14px}
+  .result .kv2{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+  .result .kv2 div{font-size:11px;color:var(--dimmer)}
+  .result .kv2 b{display:block;font-family:var(--mono);font-size:13px;color:var(--ink);margin-top:2px}
+
+  /* entry / rules */
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .pcard{border:1px solid var(--line);border-radius:4px;background:var(--panel);padding:16px}
+  .pcard.on{border-color:rgba(111,227,168,.42);background:linear-gradient(180deg,rgba(111,227,168,.05),transparent 70%)}
+  .pcard h3{margin:0 0 2px;font-size:15px}
+  .pcard .sub{font-size:11.5px;color:var(--dim);margin-bottom:12px}
+  .chk{display:flex;align-items:center;gap:9px;font-size:12px;padding:6px 0;color:var(--dim);border-top:1px solid rgba(230,237,233,.06)}
+  .chk .dot2{width:14px;height:14px;border-radius:50%;flex:0 0 14px;border:1px solid rgba(230,237,233,.22);display:flex;align-items:center;justify-content:center;font-size:9px;color:#04120C}
+  .chk.ok .dot2{background:var(--mint);border-color:var(--mint)}
+  .chk.wait .dot2{border-color:var(--sand);color:var(--sand)}
+  .chk b{margin-left:auto;font-weight:600;color:var(--ink)}
+  .ladder{margin-top:12px;padding-top:10px;border-top:1px solid rgba(230,237,233,.06)}
+  .ladder .bar2{height:4px;background:rgba(230,237,233,.10);border-radius:2px;overflow:hidden;margin:7px 0 6px}
+  .ladder .bar2 i{display:block;height:100%;background:var(--mint);width:66%}
+  .tier{font-family:var(--mono);font-size:11px;border-radius:2px;padding:1px 6px;border:1px solid;margin-left:6px;vertical-align:1px}
+  .tier.A{color:var(--red);border-color:rgba(228,87,46,.5)}
+  .tier.B{color:var(--sand);border-color:rgba(200,164,106,.5)}
+  .tier.C{color:var(--mint);border-color:rgba(111,227,168,.45)}
+  .gate{margin-top:10px;border:1px dashed rgba(200,164,106,.4);border-radius:3px;padding:8px 10px;font-size:11.5px;color:var(--sand);background:rgba(200,164,106,.05)}
+  table.rule{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+  table.rule th{text-align:left;font-weight:500;font-size:11px;color:var(--dimmer);padding:0 10px 8px 0;border-bottom:1px solid var(--line2);letter-spacing:.06em}
+  table.rule td{padding:10px 10px 10px 0;border-bottom:1px solid rgba(230,237,233,.06);color:var(--dim);line-height:1.65;vertical-align:top}
+  table.rule td:first-child{color:var(--ink);white-space:nowrap}
+  table.rule td b{color:var(--ink);font-weight:600}
+
+  /* login */
+  .login{width:min(420px,100%)}
+  .login h2{margin:0 0 4px;font-size:19px}
+  .login .sub{font-size:11.5px;color:var(--dim);margin-bottom:16px;line-height:1.7}
+  .login .rowline{display:flex;gap:8px}
+  .login .rowline input{flex:1}
+  .login .rowline .btn2{white-space:nowrap;border:1px solid rgba(111,227,168,.5);color:var(--mint);
+        border-radius:3px;padding:8px 12px;font-size:12px;font-weight:600}
+  .login .hint{font-size:11px;color:var(--sand);margin-top:8px;line-height:1.6}
+  .mode{font-size:11px;color:var(--dimmer);border:1px solid var(--line);border-radius:2px;padding:2px 7px}
+
+  /* ---- 登录页（照参考图：暗底 + 朱橙 + 大字） ---- */
+  #loginMask{background:#0B0B0C;padding:0;place-items:stretch;align-items:stretch;justify-content:stretch}
+  .lg{display:grid;grid-template-columns:1.12fr .88fr;min-height:100vh;width:100%}
+  .lg-left{position:relative;display:flex;flex-direction:column;justify-content:space-between;
+    padding:56px 52px 44px;border-right:1px solid rgba(255,255,255,.07);overflow:hidden}
+  .lg-left::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 148px,rgba(255,255,255,.032) 148px 149px)}
+  .lg-logo{position:relative;font-size:15px;font-weight:700;letter-spacing:.16em;color:#F2F0EC}
+  .lg-logo span{font-size:11px;letter-spacing:.34em;color:#7E7E79;font-weight:500;margin-left:10px;vertical-align:1px}
+  .lg-mid{position:relative;margin:auto 0}
+  .lg-hero{margin:0;font-size:clamp(44px,5.6vw,92px);line-height:1.02;letter-spacing:-.035em;
+    font-weight:800;color:#F2F0EC}
+  .lg-hero em{font-style:normal;display:block;color:transparent;-webkit-text-stroke:1.6px #E9542B;
+    letter-spacing:-.01em}
+  .lg-sub{position:relative;max-width:520px;margin:26px 0 0;font-size:13px;line-height:1.95;color:#9A9A94}
+  .lg-sub b{color:#F2F0EC;font-weight:600}
+  .lg-facts{position:relative;display:flex;gap:44px;flex-wrap:wrap;font-size:11px;line-height:1.9;color:#8A8A86;
+    border-top:1px solid rgba(255,255,255,.08);padding-top:18px}
+  .lg-facts b{color:#C9C6C0;font-weight:600;display:block;margin-bottom:2px}
+  .lg-right{display:flex;align-items:center;justify-content:center;padding:48px 40px;background:#0E0E0F}
+  .lg-card{width:100%;max-width:352px}
+  .lg-card h2{margin:0 0 8px;font-size:22px;font-weight:800;letter-spacing:-.01em;color:#F2F0EC}
+  .lg-hint{margin:0 0 22px;font-size:11.5px;line-height:1.85;color:#8A8A86}
+  .lg-f{margin-bottom:14px}
+  .lg-f label{display:block;font-size:11px;color:#8A8A86;margin-bottom:6px;letter-spacing:.06em}
+  .lg-f input,.lg-f select{width:100%;background:#141415;border:1px solid rgba(255,255,255,.12);
+    border-radius:3px;padding:11px 12px;color:#F2F0EC;font-size:13.5px;outline:0;transition:border-color .15s}
+  .lg-f input::placeholder{color:#A7A7A1}
+  .lg-f input:focus,.lg-f select:focus{border-color:#E9542B}
+  .lg-row{display:flex;gap:8px}
+  .lg-row input{flex:1}
+  .lg-code{white-space:nowrap;padding:0 14px;border:1px solid rgba(233,84,43,.55);color:#E9542B;
+    border-radius:3px;font-size:12px;font-weight:700;background:transparent}
+  .lg-code:hover{background:rgba(233,84,43,.1)}
+  .lg-go{width:100%;margin-top:8px;padding:12px;border-radius:3px;background:#E9542B;color:#0B0B0C;
+    font-size:14px;font-weight:800;letter-spacing:.02em}
+  .lg-go:hover{background:#F4633A}
+  .lg-alt{margin-top:14px;text-align:center}
+  .lg-link{font-size:12px;color:#8A8A86;border-bottom:1px solid transparent}
+  .lg-link:hover{color:#F2F0EC}
+  .lg-card .hint{margin-top:8px;font-size:11px;color:#E9542B;line-height:1.6}
+  @media (max-width:900px){
+    .lg{grid-template-columns:1fr}
+    .lg-left{padding:34px 24px 26px;border-right:0;border-bottom:1px solid rgba(255,255,255,.07)}
+    .lg-hero{font-size:44px}
+    .lg-facts{display:none}
+    .lg-right{padding:30px 24px 48px}
+  }
+
+  @media (max-width: 900px){
+    .cols2{grid-template-columns:1fr}
+    .bar{height:auto;padding:10px 14px;flex-wrap:wrap;gap:10px}
+    .brand span{display:none}
+    .role{order:2;margin-left:0}
+    .bar .right{order:3;margin-left:auto}
+    .bar .right .ghost{display:none}
+    .shell{grid-template-columns:1fr;height:auto}
+    .rail{border-right:0;border-bottom:1px solid var(--line);display:flex;padding:0;overflow-x:auto}
+    .rail h2,.rail .who{display:none}
+    .rail nav{flex-direction:row;margin:0}
+    .nav-i{white-space:nowrap;border-left:0;border-bottom:2px solid transparent;padding:11px 14px}
+    .nav-i[aria-pressed="true"]{border-left-color:transparent;border-bottom-color:var(--mint)}
+    .stage{padding:16px 14px 36px}
+    .dbody{grid-template-columns:1fr}
+    .panel{position:static}
+    .dhead h2{font-size:19px;flex:1 1 100%}
+    .dhead .sub{flex:1 1 100%}
+    .dhead .acts{width:100%;margin-left:0;justify-content:space-between}
+    .shot{grid-template-columns:36px 64px 1fr 44px;gap:8px}
+    .thumb{width:64px;height:37px}
+    .shot .txt em{max-width:150px}
+    .q-items{grid-template-columns:repeat(2,1fr)}
+    .qi{border-right:0;border-bottom:1px solid rgba(230,237,233,.07)}
+    .row2{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand"><i></i>第七场 <span>· 短片合作平台</span></div>
+  <div class="role" id="role">
+    <button data-role="client" aria-pressed="true">我是客户</button>
+    <button data-role="studio" aria-pressed="false">我是制作公司</button>
+    <button data-role="solo" aria-pressed="false">我是个人创作者</button>
+  </div>
+  <div class="right">
+    <span class="mode" id="modeBadge"></span>
+    <span class="ghost" id="whoami"></span>
+    <button class="solid" id="primary">发布需求</button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="rail">
+    <h2>平台</h2>
+    <nav id="nav"></nav>
+    <div class="who" id="railNote"></div>
+  </aside>
+  <main class="stage" id="view"></main>
+</div>
+
+<div class="mask" id="mask" hidden><div class="modal" id="modal"></div></div>
+<div class="mask" id="loginMask" hidden>
+  <div class="lg">
+    <div class="lg-left">
+      <div class="lg-logo">第七场<span>STUDIO 07</span></div>
+      <div class="lg-mid">
+        <h1 class="lg-hero">一句想法<br><em>15 秒</em>成片</h1>
+        <p class="lg-sub">把脚本、分镜、首帧和成片压进同一条流程。你给一句能说清的话，我们出分镜表，你确认首帧，第七天之前拿到能直接投放的片子。</p>
+      </div>
+      <div class="lg-facts">
+        <div><b>起价 / 周期</b><br>15s ¥3,800 · 3 个工作日</div>
+        <div><b>交付规格</b><br>1080×1920 与 16:9 双版</div>
+        <div><b>修改</b><br>含 2 次修改</div>
+      </div>
+    </div>
+    <div class="lg-right">
+      <div class="lg-card">
+        <h2>登录 / 注册</h2>
+        <p class="lg-hint">手机号登录。企业客户完成企业认证、个人客户完成实名认证后，才能发布需求。</p>
+        <div class="lg-f"><label>手机号</label><input id="phone" inputmode="numeric" maxlength="11" placeholder="11 位手机号"></div>
+        <div class="lg-f"><label>验证码</label>
+          <div class="lg-row">
+            <input id="code" inputmode="numeric" maxlength="6" placeholder="6 位验证码">
+            <button class="lg-code" id="sendcode">获取验证码</button>
+          </div>
+          <div class="hint" id="codehint" hidden></div>
+        </div>
+        <div class="lg-f"><label>我是</label>
+          <select id="kind">
+            <option value="company">企业 / 工作室</option>
+            <option value="solo">个人</option>
+          </select>
+        </div>
+        <button class="lg-go" id="dologin">登录</button>
+        <div class="lg-alt"><button class="lg-link" id="skipLogin">先随便看看 →</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast">已提交</div>
+
+<script src="assets/nsw-shots.js"></script>
+<script>
+/* ============ 示例数据 ============ */
+const A = 'assets/';
+const CASES = [
+  { id:'gasless', cat:'产品宣传片', title:'气泡上升的那三秒', client:'Gasless 无糖气泡水',
+    dur:'15s', ratio:'9:16 + 16:9', shotsN:5, year:'2026.10',
+    cover:A+'shot-glass.png', tag:'15s · 竖版投放',
+    price:{ from:3800, level:'标准', revisions:2, days:3,
+      items:[['分镜表',800],['首帧 × 5',1250],['合成剪辑',900],['配乐字幕',550],['项目管理',300]] },
+    comments:[
+      { who:'陈女士', role:'客户', time:'2 天前', text:'气泵那段的水汽是实拍还是生成的？如果我想改成冷萃咖啡，报价会变吗？' },
+      { who:'第七场', role:'制作方', time:'1 天前', reply:true, text:'水汽是生成的，改成冷萃只换首帧提示词和配乐，报价不变；如果要加一个手持杯子的镜头，加 600。' },
+      { who:'某饮料品牌 · 市场', role:'客户', time:'5 小时前', text:'15 秒里能放下三个卖点吗？还是只能讲一个？' }
+    ],
+    shots:[
+      { n:'S01', t:'2.4s', size:'特写', cam:'微距固定', title:'拉环开瓶', desc:'拉环被掀起一半，细白水汽从瓶口溢出，罐身凝着一层水珠', img:A+'shot-cap.png', res:'2K', ratio:'9:16',
+        prompt:'广告短片静帧：一罐无糖气泡水的拉环被掀起一半，瓶口冒出细白水汽，只取瓶口与手指，深色背景，侧逆光勾出金属细齿边缘，浅景深，胶片颗粒，电影级微距布光',
+        neg:'文字、logo、多余手指、过曝高光、塑料质感、卡通渲染' },
+      { n:'S02', t:'3.0s', size:'中景', cam:'缓慢推近', title:'倒杯', desc:'液体注入玻璃杯，泡沫在杯中翻起，桌面留出字幕安全区', img:A+'shot-pour.png', res:'2K', ratio:'9:16',
+        prompt:'广告短片静帧：液体从瓶口注入透明玻璃杯，细小泡沫与水花在杯中翻起，深色木桌面，冷调高光对暖色暗部，高速快门凝固水滴，浅景深',
+        neg:'文字、logo、浑浊液体、手部畸形、杂乱背景' },
+      { n:'S03', t:'3.2s', size:'近景', cam:'固定', title:'气泡上升', desc:'杯壁两侧各一道冷白高光，气泡沿杯壁缓缓上升', img:A+'shot-macro.png', res:'2K', ratio:'9:16',
+        prompt:'广告短片静帧：玻璃杯内壁微距特写，气泡成串沿杯壁上升，杯壁上一道冷白高光，背景完全压暗，浅景深，极简构图，安静克制',
+        neg:'文字、logo、气泡过密、噪点、过曝' },
+      { n:'S04', t:'2.6s', size:'中近景', cam:'手持跟移', title:'手入画', desc:'一只手握住瓶身，逆光只留剪影，瓶身水珠反光', img:A+'shot-hand.png', res:'2K', ratio:'9:16',
+        prompt:'广告短片静帧：逆光下一只手握住透明玻璃瓶，只见手与瓶身剪影，桌面有水渍反光，暖色边缘光，深色背景，高级商业广告感',
+        neg:'文字、logo、手指畸形、指甲细节、冷白闪光' },
+      { n:'S05', t:'3.8s', size:'全景', cam:'固定', title:'落版', desc:'杯体只剩轮廓，光斑散开，右下角留出落版位置', img:A+'shot-glass.png', res:'2K', ratio:'9:16',
+        prompt:'广告短片静帧：逆光中的透明玻璃杯置于深色桌面，杯壁两侧冷白高光，背景压暗并有少量失焦暖色光斑，画面右下角留白，电影级布光',
+        neg:'文字、logo、强反光、彩色光斑、杂乱桌面' }
+    ] },
+  { id:'hengyue', cat:'企业宣传片', title:'精密件的第十二道工序', client:'恒岳精密',
+    dur:'45s', ratio:'16:9', shotsN:5, year:'2026.08',
+    cover:A+'cover-corp.png', tag:'45s · 官网首页',
+    price:{ from:9800, level:'精修', revisions:2, days:5,
+      items:[['分镜表',1800],['首帧 × 5',3200],['合成剪辑',2400],['配乐字幕',1200],['项目管理',1200]] },
+    comments:[
+      { who:'恒岳 · 品牌部', role:'客户', time:'3 天前', text:'能不能再出一条 15 秒的版本，只留第十二道工序那一段？' },
+      { who:'第七场', role:'制作方', time:'2 天前', reply:true, text:'可以，同一批素材重剪，报价 2,400，2 个工作日。' }
+    ],
+    shots:[
+      { n:'S01', t:'4.0s', size:'大远景', cam:'横移', title:'车间全貌', desc:'无人的夜班车间，一排机床的指示灯亮着，只有顶灯照明', img:A+'cover-corp.png', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：深夜的精密制造车间全景，一排数控机床指示灯亮起，冷白顶光，地面有反光，无人物，工业秩序感，电影级布光',
+        neg:'文字、logo、火花四溅、杂乱线缆、废料堆积' },
+      { n:'S02', t:'5.0s', size:'特写', cam:'微距推', title:'第十二道工序', desc:'刀头贴近金属表面，切屑卷起一条细丝', img:'', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：数控刀头贴近金属表面的微距特写，切屑卷成一条细丝，切削液微光，冷调金属反光，浅景深，工业质感',
+        neg:'文字、logo、飞溅火星、脏污、卡通质感' },
+      { n:'S03', t:'4.5s', size:'中景', cam:'固定', title:'检验台', desc:'千分尺压上工件，读数停在公差带中间', img:'', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：检验台上的千分尺压在金属工件上，读数清晰可见，冷白工作灯，背景虚化的车间，纪实工业摄影',
+        neg:'文字、logo、读数模糊、手部畸形、暖黄灯光' },
+      { n:'S04', t:'5.5s', size:'近景', cam:'轻微手持', title:'老师傅的手', desc:'指腹在工件边缘抹过，判断毛刺有没有清干净', img:'', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：一双有经验的手在工件边缘轻抹，指腹与金属的接触特写，侧光勾出手部纹理，深色背景，纪实感',
+        neg:'文字、logo、美甲、多余手指、过曝' },
+      { n:'S05', t:'5.0s', size:'中景', cam:'缓慢后拉', title:'装箱', desc:'工件嵌入定制泡棉，箱盖合上，标签朝上', img:'', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：精密工件嵌入定制泡棉内衬，纸箱盖缓缓合上，顶部贴好标签，冷调工作台光，整洁有序',
+        neg:'文字、logo、破损包装、杂乱、暖色偏色' }
+    ] },
+  { id:'coldchain', cat:'企业宣传片', title:'凌晨四点的冷链仓', client:'鲜配',
+    dur:'60s', ratio:'16:9', shotsN:4, year:'2026.09',
+    cover:A+'cover-cold.png', tag:'60s · 行业展会',
+    price:{ from:12800, level:'精修', revisions:2, days:6,
+      items:[['分镜表',2200],['首帧 × 4',3800],['合成剪辑',3200],['配乐字幕',1500],['项目管理',2100]] },
+    comments:[
+      { who:'鲜配 · 市场', role:'客户', time:'1 天前', text:'展会现场是大屏循环播放，需要 4K 版本吗？' }
+    ],
+    shots:[
+      { n:'S01', t:'6.0s', size:'全景', cam:'轨道推', title:'月台', desc:'冷链车倒车进入月台，白雾从门缝溢出', img:A+'cover-cold.png', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：凌晨的冷链仓库月台，冷藏车正在倒车对接，门口溢出白色冷雾，蓝色应急灯，地面湿滑反光，纪实摄影',
+        neg:'文字、logo、浓雾遮画面、暖黄路灯、人物正脸' },
+      { n:'S02', t:'4.0s', size:'中景', cam:'固定', title:'温度屏', desc:'屏幕上的曲线在 -18℃ 一线保持平稳', img:'', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：冷链仓库墙上的温度监控屏，曲线平稳，界面简洁，冷蓝背光，浅景深，工业设备质感',
+        neg:'文字乱码、logo、花屏、暖色偏色' },
+      { n:'S03', t:'5.0s', size:'近景', cam:'跟随', title:'分拣手', desc:'戴薄手套的手把标签扫过扫码口，绿灯亮起', img:'', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：戴薄手套的手把标签对准扫码口，设备亮起绿灯，冷调环境光，动作瞬间凝固，浅景深',
+        neg:'文字、logo、手套破损、红光误识别、手部畸形' },
+      { n:'S04', t:'5.0s', size:'中景', cam:'固定', title:'出门', desc:'保温箱装上三轮车，车灯在湿地面拉出长条', img:'', res:'2K', ratio:'16:9',
+        prompt:'企业宣传片静帧：清晨湿滑的路面，保温箱被装上配送车，车灯在地面拉出反光长条，低角度，蓝调时刻',
+        neg:'文字、logo、雨帘遮挡、人物正脸、暖色路灯' }
+    ] },
+  { id:'knife', cat:'产品宣传片', title:'一把刀的第七次开刃', client:'铁匠铺 · 陈记',
+    dur:'30s', ratio:'16:9', shotsN:4, year:'2026.07',
+    cover:A+'cover-knife.png', tag:'30s · 电商详情',
+    price:{ from:6800, level:'标准', revisions:1, days:4,
+      items:[['分镜表',1200],['首帧 × 4',2200],['合成剪辑',1800],['配乐字幕',900],['项目管理',700]] },
+    comments:[],
+    shots:[
+      { n:'S01', t:'3.5s', size:'特写', cam:'固定', title:'磨石与水', desc:'水从磨石上淌过，刀身缓慢贴上石面', img:A+'cover-knife.png', res:'2K', ratio:'16:9',
+        prompt:'产品宣传片静帧：水从磨刀石表面淌过，刀身贴向石面的瞬间，水膜反光，深色背景，侧逆光，微距质感',
+        neg:'文字、logo、锈迹、夸张火花、过曝' },
+      { n:'S02', t:'4.0s', size:'近景', cam:'侧移', title:'开刃角度', desc:'刀锋与石面维持固定夹角，反光沿刃口走一条直线', img:'', res:'2K', ratio:'16:9',
+        prompt:'产品宣传片静帧：刀锋与磨石保持固定夹角，一道高光沿刃口拉成直线，冷调金属质感，浅景深，极简构图',
+        neg:'文字、logo、血迹、暴力元素、塑料手柄' },
+      { n:'S03', t:'4.5s', size:'中景', cam:'固定', title:'试切', desc:'一刀落下，番茄两半分开，刀口没有挤压痕', img:'', res:'2K', ratio:'16:9',
+        prompt:'产品宣传片静帧：一把厨刀切下番茄，切口整齐没有挤压，汁水微光，深色砧板，冷调侧光，高速快门',
+        neg:'文字、logo、汁水飞溅过度、砧板脏污、手指入画' },
+      { n:'S04', t:'3.0s', size:'近景', cam:'固定', title:'刃口反光', desc:'刀身倾斜，刃口反光扫过镜头', img:'', res:'2K', ratio:'16:9',
+        prompt:'产品宣传片静帧：厨刀刀身倾斜，一道锐利反光扫过刃口，深色背景，冷白单光源，金属纹理清晰，极简',
+        neg:'文字、logo、锈斑、划痕过多、暖黄灯光' }
+    ] },
+  { id:'handover', cat:'AI 婚礼记录', title:'她父亲把她的手交出去之前', client:'私人委托 · 杭州',
+    dur:'3min', ratio:'16:9', shotsN:24, year:'2026.09',
+    cover:A+'cover-wedding.png', tag:'3min · 现场放映',
+    price:{ from:12800, level:'电影级', revisions:2, days:7,
+      items:[['分镜与脚本',2600],['首帧 × 24',4800],['合成调色',3200],['配乐与旁白',1400],['项目管理',800]] },
+    comments:[
+      { who:'准新娘 · 小林', role:'客户', time:'6 小时前', text:'我们明年五月办，像这样的片子要提前多久约？可以只做仪式那段吗？' },
+      { who:'第七场', role:'制作方', time:'4 小时前', reply:true, text:'提前 3 周锁档期；只做仪式段可以，报价按 8 镜算，约 6,800。' }
+    ],
+    shots:[
+      { n:'S01', t:'8.0s', size:'中景', cam:'固定', title:'走廊', desc:'仪式开始前十分钟，父亲在走廊尽头的窗边站着', img:A+'cover-wedding.png', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：仪式开始前的酒店走廊，父亲独自站在窗边，暖金色夕阳从侧后方打进来，背景虚化的花艺，纪实感，轻微胶片颗粒',
+        neg:'文字、logo、直视镜头、摆拍姿势、过度磨皮' },
+      { n:'S02', t:'6.0s', size:'特写', cam:'轻微手持', title:'手', desc:'父亲反复整理袖口，指节因为用力有点发白', img:'', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：父亲整理袖口的手部特写，指节微微发白，暖光侧照，背景完全虚化，纪实摄影质感',
+        neg:'文字、logo、美甲、戒指过多、手部畸形' },
+      { n:'S03', t:'7.0s', size:'中景', cam:'跟移', title:'走位', desc:'两人并肩走向仪式区，脚步在红毯上对不齐', img:'', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：父亲与新娘并肩走过红毯，步伐不完全同步，暖色逆光，宾客在两侧虚化，真实抓拍质感',
+        neg:'文字、logo、摆拍、正脸特写、过度锐化' },
+      { n:'S04', t:'5.0s', size:'近景', cam:'固定', title:'交接', desc:'两只手在新郎面前停了一下，才松开', img:'', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：父亲把新娘的手交到新郎手中，三只手交叠的瞬间，暖金色光，浅景深，轻微胶片颗粒',
+        neg:'文字、logo、戒指特写喧宾夺主、手部畸形' },
+      { n:'S05', t:'6.0s', size:'全景', cam:'缓慢后拉', title:'落座', desc:'父亲回到第一排坐下，抬头看台上', img:'', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：父亲在第一排落座抬头望向舞台，逆光剪影，周围宾客虚化，暖色调，纪实感',
+        neg:'文字、logo、正脸摆拍、过度提亮' }
+    ] },
+  { id:'seawind', cat:'AI 婚礼记录', title:'风把誓词吹跑了', client:'私人委托 · 厦门',
+    dur:'2min', ratio:'16:9', shotsN:16, year:'2026.11',
+    cover:A+'cover-sea.png', tag:'2min · 海边仪式',
+    price:{ from:8800, level:'精修', revisions:2, days:6,
+      items:[['分镜与脚本',1800],['首帧 × 16',3200],['合成调色',2200],['配乐与旁白',900],['项目管理',700]] },
+    comments:[
+      { who:'准新郎 · 阿哲', role:'客户', time:'1 天前', text:'海边风大，生成的画面头发会很乱吗？我们想要那种被风吹乱的感觉。' }
+    ],
+    shots:[
+      { n:'S01', t:'6.0s', size:'全景', cam:'固定', title:'海边布置', desc:'椅子被风吹得有点歪，花艺上还挂着水汽', img:A+'cover-sea.png', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：海边仪式区的白色椅子被海风吹得轻微歪斜，花艺上挂着水汽，阴天散射光，远处海面灰蓝，纪实感',
+        neg:'文字、logo、烈日高反差、塑料花、过度饱和' },
+      { n:'S02', t:'7.0s', size:'中景', cam:'手持跟随', title:'誓词纸', desc:'新娘念到一半，纸被风掀起，她笑着用手压住', img:'', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：新娘手中的誓词纸被海风吹起，她伸手压住并笑出来，阴天柔光，背景虚化的海面，真实抓拍',
+        neg:'文字清晰可读、logo、摆拍、正脸大特写、过度磨皮' },
+      { n:'S03', t:'5.0s', size:'特写', cam:'固定', title:'裙摆与沙', desc:'裙摆被风掀起一角，沙粒粘在褶皱上', img:'', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：白色裙摆被海风吹起一角，细沙粘在褶皱上，低角度特写，阴天柔光，浅景深',
+        neg:'文字、logo、脏污、过曝、塑料质感' },
+      { n:'S04', t:'6.0s', size:'中景', cam:'固定', title:'交换', desc:'两人低头笑，戒指戴到一半卡住了', img:'', res:'2K', ratio:'16:9',
+        prompt:'婚礼记录静帧：两人低头笑着交换戒指，戒指戴到一半卡住，阴天柔光，浅景深，真实抓拍质感',
+        neg:'文字、logo、摆拍、过度磨皮、正脸特写' }
+    ] },
+  { id:'changye', cat:'小说漫剧', title:'长夜行 · 第一话 破庙', client:'原著 · 网络连载',
+    dur:'5min', ratio:'9:16', shotsN:38, year:'2026.10',
+    cover:A+'cover-comic.png', tag:'5min · 竖版漫剧',
+    price:{ from:32000, level:'电影级', revisions:2, days:15,
+      items:[['分镜与脚本',6000],['首帧 × 38',12000],['合成与特效',8600],['配乐与配音',3600],['项目管理',1800]] },
+    comments:[
+      { who:'某 IP 运营', role:'客户', time:'2 天前', text:'我们有一部 40 万字的连载，想做第一季 12 集，这种规格大概怎么算？' },
+      { who:'第七场', role:'制作方', time:'2 天前', reply:true, text:'按单集 38 镜、电影级算，单集约 3.2 万；12 集打包可以按 9 折，分三批交付。' }
+    ],
+    shots:[
+      { n:'S01', t:'4.0s', size:'大远景', cam:'缓慢下摇', title:'破庙外', desc:'暴雨夜，半塌的庙门在雨里晃，屋内一点残火', img:A+'cover-comic.png', res:'2K', ratio:'9:16',
+        prompt:'国漫漫剧静帧：暴雨夜半塌的古庙外观，残破庙门在风雨中晃动，屋内透出一点橘红火光，水墨与赛璐璐混合，青灰冷调，电影构图',
+        neg:'文字、logo、现代建筑、过度写实照片感、鲜艳荧光色' },
+      { n:'S02', t:'3.5s', size:'中景', cam:'固定', title:'少年入画', desc:'少年背着剑走进庙内，雨水顺着发梢滴到地上', img:'', res:'2K', ratio:'9:16',
+        prompt:'国漫漫剧静帧：少年背剑踏入破庙，雨水顺发梢滴落，火光从侧面打亮半张脸，水墨笔触与赛璐璐上色混合，青灰冷调加一点朱红',
+        neg:'文字、logo、现代服装、过度写实、荧光色' },
+      { n:'S03', t:'4.5s', size:'特写', cam:'推近', title:'剑出鞘半寸', desc:'拇指顶开剑鞘，金属摩擦声起，火光在刃上跳', img:'', res:'2K', ratio:'9:16',
+        prompt:'国漫漫剧静帧：拇指顶开剑鞘露出半寸剑刃，火光在刃面跳动，暗部占画面大半，水墨飞白笔触，冷调金属高光',
+        neg:'文字、logo、血腥、夸张特效光、现代剑型' },
+      { n:'S04', t:'5.0s', size:'中景', cam:'侧移', title:'回望', desc:'门外雨幕里站着一个人影，看不清脸', img:'', res:'2K', ratio:'9:16',
+        prompt:'国漫漫剧静帧：少年侧身回望庙门，门外雨幕中站着一个看不清面孔的人影，剪影构图，青灰冷调，水墨质感',
+        neg:'文字、logo、清晰正脸、现代元素、荧光色' }
+    ] },
+  { id:'jin', cat:'小说漫剧', title:'烬 · 长安之外', client:'原著 · 出版改编',
+    dur:'4min', ratio:'9:16', shotsN:30, year:'2026.06',
+    cover:A+'cover-jin.png', tag:'4min · 竖版漫剧',
+    price:{ from:26000, level:'精修', revisions:2, days:12,
+      items:[['分镜与脚本',5200],['首帧 × 30',9600],['合成与特效',6800],['配乐与配音',3000],['项目管理',1400]] },
+    comments:[],
+    shots:[
+      { n:'S01', t:'4.0s', size:'大远景', cam:'固定', title:'城门外', desc:'黄土官道尽头是长安城墙轮廓，天色将暗未暗', img:A+'cover-jin.png', res:'2K', ratio:'9:16',
+        prompt:'国漫漫剧静帧：黄昏黄土官道尽头的长安城墙轮廓，天色将暗，远处有零星灯火，水墨与赛璐璐混合，暖褐主调配少量朱红',
+        neg:'文字、logo、现代建筑、过度写实、荧光色' },
+      { n:'S02', t:'3.5s', size:'近景', cam:'跟移', title:'马蹄', desc:'马蹄踏过积水，泥点溅起', img:'', res:'2K', ratio:'9:16',
+        prompt:'国漫漫剧静帧：马蹄踏过官道积水，泥点溅起的瞬间，低角度特写，水墨飞白，暖褐冷灰对比',
+        neg:'文字、logo、现代马具、血腥、夸张飞溅' },
+      { n:'S03', t:'4.0s', size:'中景', cam:'固定', title:'灯下人', desc:'酒肆内，一个人影在灯下抬头', img:'', res:'2K', ratio:'9:16',
+        prompt:'国漫漫剧静帧：酒肆内灯下人影抬头，半张脸被油灯照亮，背景木格窗与酒旗虚化，水墨笔触，暖光冷暗部',
+        neg:'文字、logo、现代服饰、清晰正脸、荧光色' },
+      { n:'S04', t:'5.0s', size:'特写', cam:'推近', title:'火折子', desc:'火折子被吹亮，照亮握它的手指', img:'', res:'2K', ratio:'9:16',
+        prompt:'国漫漫剧静帧：火折子被吹亮的瞬间照亮手指，火星微光，深色背景，极简构图，水墨质感',
+        neg:'文字、logo、爆炸效果、现代打火机、荧光色' }
+    ] }
+];
+
+/* 由成片自动拆解生成：真实样本，来自《你没见过的世界另一面》3:40 / 60fps */
+CASES.unshift({
+  id:'nsw', cat:'品牌短片', title:'你没见过的世界另一面', client:'科贸项目 · 品牌短片',
+  dur:'3min40s', ratio:'16:9', shotsN:72, year:'2026.11',
+  auto:true, video:{ w:1922, h:1080, fps:60 },
+  cover:A+'nsw-01.png', tag:'3min40s · 自动拆解',
+  price:{ from:28000, level:'电影级', revisions:2, days:15,
+    items:[['分镜与脚本',5200],['首帧 × 72',9600],['合成调色',7200],['配乐与音效',3600],['项目管理',2400]] },
+  comments:[],
+  shots:[
+    { n:'S01', t:'4.4s', size:'中景', cam:'固定', title:'桌前', desc:'白衬衫青年坐在窗边桌前，侧脸看笔记本，晨光从右侧纱帘透进来', img:A+'nsw-01.png', res:'1080p', ratio:'16:9',
+      prompt:'电影静帧：现代都市青年男性，白色衬衫，坐在木质书桌前使用笔记本电脑，侧脸三分之二构图，清晨侧逆光透过纱帘，暖调低饱和，浅景深，35mm 镜头，轻微胶片颗粒',
+      neg:'文字、logo、正脸直视、过度磨皮、冷白闪光、杂乱桌面' },
+    { n:'S02', t:'3.8s', size:'特写', cam:'微距固定', title:'转币', desc:'手部极特写，两指夹着一枚旧铜钱翻转，背景虚化成青蓝色块', img:A+'nsw-02.png', res:'1080p', ratio:'16:9',
+      prompt:'手部极特写：指间夹着一枚旧铜钱翻转，浅景深背景虚化为青蓝色块，侧光勾出手背纹理，微距镜头，暖冷对比，电影质感',
+      neg:'文字、logo、多余手指、指甲过长、过曝、塑料质感' },
+    { n:'S03', t:'2.7s', size:'近景', cam:'固定', title:'币在空中', desc:'铜钱悬在青年脸前的空中，人物在背景虚焦，他抬眼看币', img:A+'nsw-03.png', res:'1080p', ratio:'16:9',
+      prompt:'铜钱悬浮在空中的瞬间：前景硬币清晰、背景青年面部虚焦，他抬眼注视，暖调室内光，浅景深，微距与人像混合焦段',
+      neg:'文字、logo、双影、运动模糊过度、卡通渲染' },
+    { n:'S04', t:'1.9s', size:'近景', cam:'固定', title:'落向桌面', desc:'铜钱向下坠落，背景是明亮的窗与纱帘，桌面在画面下缘', img:A+'nsw-04.png', res:'1080p', ratio:'16:9',
+      prompt:'铜钱垂直坠落的瞬间：背景为明亮的窗与纱帘形成光晕，桌面在画面下缘，浅景深，柔和逆光，暖调',
+      neg:'文字、logo、多重硬币、过曝死白、噪点' },
+    { n:'S05', t:'1.8s', size:'全景', cam:'低机位', title:'切世界：街', desc:'画面切到石板路面低角度，一只木制车轮从镜头前掠过', img:A+'nsw-05.png', res:'1080p', ratio:'16:9',
+      prompt:'低角度贴地视角：民国石板路面，木制车轮从镜头前掠过，背景是模糊的街道与行人，冷灰调，手持感，浅景深',
+      neg:'文字、logo、现代汽车、塑料质感、过曝' },
+    { n:'S06', t:'2.1s', size:'全景', cam:'低机位', title:'街上落币', desc:'低角度看石板路，远处行人穿长衫与长裙走动，铜钱在近处地面旋转', img:A+'nsw-06.png', res:'1080p', ratio:'16:9',
+      prompt:'低角度石板路：民国街道行人穿长衫与长裙行走，前景一枚铜钱在地上旋转，冷调日光，浅景深，胶片颗粒',
+      neg:'文字、logo、现代服装、过度饱和、卡通质感' },
+    { n:'S07', t:'3.8s', size:'大远景', cam:'仰拍', title:'币与街', desc:'仰拍视角，铜钱在空中旋转，两侧是民国骑楼与旗幡，远处有人抬轿', img:A+'nsw-07.png', res:'1080p', ratio:'16:9',
+      prompt:'仰拍视角：一枚铜钱在空中旋转，两侧为民国骑楼建筑与悬挂旗幡，远处行人抬轿经过，强逆光，胶片质感，冷灰与暖褐对比',
+      neg:'文字、logo、现代高楼、过曝、荧光色' },
+    { n:'S08', t:'1.4s', size:'特写', cam:'固定', title:'落在石阶', desc:'石阶的浅景深特写，铜钱落向台阶下方，边缘带虚影', img:A+'nsw-08.png', res:'1080p', ratio:'16:9',
+      prompt:'石阶浅景深特写：铜钱落向台阶下方，前景石阶纹理清晰、铜钱带轻微运动虚影，冷调自然光，微距镜头',
+      neg:'文字、logo、多重虚影、噪点、过曝' },
+    { n:'S09', t:'1.3s', size:'特写', cam:'微距固定', title:'卡进石缝', desc:'微距特写，铜钱立在两块粗糙石头的缝隙里，石面有凿痕与苔痕', img:A+'nsw-09.png', res:'1080p', ratio:'16:9',
+      prompt:'微距特写：一枚铜钱卡在两块粗糙石块的缝隙中，石面有凿痕与苔痕，侧光强调质感，极浅景深，冷调',
+      neg:'文字、logo、铜钱变形、过曝、塑料质感' },
+    { n:'S10', t:'2.2s', size:'中景', cam:'低机位', title:'他从地上起来', desc:'青年双手撑在石板上抬头看镜头，深色外套，背景是民国街道与行人', img:A+'nsw-10.png', res:'1080p', ratio:'16:9',
+      prompt:'青年双手撑在石板地面上抬头看向镜头，身穿深色现代外套，背景为民国街道与往来行人，低机位，冷调日光，纪实感',
+      neg:'文字、logo、正脸大特写、血迹、过度磨皮' },
+    { n:'S11', t:'1.2s', size:'特写', cam:'微距固定', title:'伸手取币', desc:'一只手伸向石缝中的铜钱，指尖将触未触', img:A+'nsw-11.png', res:'1080p', ratio:'16:9',
+      prompt:'手部伸向石缝中铜钱的微距特写：指尖将触未触，侧光，浅景深，冷调质感，颗粒感',
+      neg:'文字、logo、多余手指、指甲细节、过曝' },
+    { n:'S12', t:'1.8s', size:'全景', cam:'固定', title:'碎裂转场', desc:'逆光下的碎裂瞬间，碎片向四周飞散，右侧有行人双腿剪影经过', img:A+'nsw-12.png', res:'1080p', ratio:'16:9',
+      prompt:'逆光下的碎裂转场：碎片向四周飞散，右侧行人双腿剪影经过，强暖橙色光，高对比剪影，电影级转场',
+      neg:'文字、logo、血浆、卡通爆炸、过曝死白' }
+  ]
+});
+
+/* 用真实拆解结果覆盖（72 镜） */
+if (window.NSW_SHOTS && window.NSW_SHOTS.length){
+  CASES[0].shots = window.NSW_SHOTS;
+  CASES[0].shotsN = window.NSW_SHOTS.length;
+  CASES[0].cover = 'assets/film-poster.jpg';
+}
+
+const RFQS = [  { id:'q1', title:'古镇民宿 · 15 秒投放片', client:'栖迟民宿 · 市场', cat:'产品宣传片',
+    dur:'15s', ratio:'9:16', level:'标准', budget:[3000,5000], deadline:'3 天后截止',
+    desc:'一家婺源的古镇民宿，明年三月开业。想要一条 15 秒的竖版投放片，主打「一院子的雨声」。参考第七场的气泡水那条的质感：暗场、逆光、单点高光。需要能在抖音和小红书投放，含字幕。',
+    refCase:'gasless', bids:[
+      { studio:'青苔影像', price:4200, days:4, note:'可以实拍院子雨声，加 800 提供同期声素材。', time:'2 小时前' },
+      { studio:'无隅工作室', price:3600, days:5, note:'纯生成方案，不含实拍；含 2 次修改。', time:'5 小时前' }
+    ] },
+  { id:'q2', title:'工业设备 · 45 秒企业片', client:'恒远机械', cat:'企业宣传片',
+    dur:'45s', ratio:'16:9', level:'精修', budget:[12000,18000], deadline:'7 天后截止',
+    desc:'需要一条给客户看的工厂实力片，重点是我们自己的检测实验室。有实拍素材（车间、设备、人员），只做分镜、生成补镜、剪辑与调色。交付 4K，含中英字幕。',
+    refCase:'hengyue', bids:[
+      { studio:'第七场', price:15600, days:6, note:'含实验室补镜 6 个，实拍素材调色统一。', time:'1 天前' }
+    ] },
+  { id:'q3', title:'连载漫剧 · 第一季 12 集', client:'某 IP 运营', cat:'小说漫剧',
+    dur:'5min/集', ratio:'9:16', level:'电影级', budget:[300000,400000], deadline:'15 天后截止',
+    desc:'40 万字连载改编，第一季 12 集，每集 5 分钟、约 38 镜。需要水墨 + 赛璐璐的混合风格，角色一致性要稳。希望按三批交付，每批 4 集。',
+    refCase:'changye', bids:[] }
+];
+
+/* 微单 / AI 二创专区的示例需求 */
+RFQS.unshift(
+  { id:'q4', title:'老照片转 15 秒纪念片', client:'个人客户 · 小周', cat:'AI 二创',
+    dur:'15s', ratio:'9:16', level:'标准', budget:[300,800], deadline:'2 天后截止',
+    desc:'家里 12 张老照片，想做成 15 秒纪念短片，配轻音乐，给母亲生日放。素材在手机里，可以微信发。不需要字幕，只要能看清脸。',
+    refCase:null, lic:true, bids:[] },
+  { id:'q5', title:'探店原片二创成 3 条竖版', client:'轻野传媒 · 投放', cat:'AI 二创',
+    dur:'30s×3', ratio:'9:16', level:'标准', budget:[600,1200], deadline:'4 天后截止',
+    desc:'门店探店原片 8 分钟，剪成 3 条 30 秒竖版，加字幕和门店地址落版。素材是我们自己拍的，有授权。',
+    refCase:null, lic:true, bids:[
+      { studio:'无隅工作室', price:900, days:3, note:'含字幕与 3 条落版，素材我方二次整理。', time:'3 小时前' }
+    ] }
+);
+
+/* 接单方主页：甲方在报价列表里点名字就能看 */
+const PEOPLE = {
+  '第七场': { type:'企业', badge:'', done:41, rating:4.9, onTime:98, deposit:20000,
+    tag:'AI 短片 / 婚礼 / 漫剧', months:14,
+    works:['nsw','hengyue','coldchain','gasless','handover','changye'],
+    recs:[['产品宣传片','15s','¥3,800','按期'],['企业宣传片','45s','¥9,800','按期'],['婚礼记录','3min','¥12,800','按期']] },
+  '青苔影像': { type:'企业', badge:'', done:23, rating:4.9, onTime:96, deposit:5000,
+    tag:'实拍 + 生成混合 · 民宿 / 餐饮', months:8,
+    works:['nsw','seawind','knife','gasless','jin','coldchain'],
+    recs:[['民宿投放片','15s','¥4,200','按期'],['探店二创','30s×3','¥900','提前 1 天']] },
+  '无隅工作室': { type:'个人工作室', badge:'L2', done:17, rating:4.7, onTime:92, deposit:5000,
+    tag:'纯生成 · 投放片 / 二创', months:6,
+    works:['gasless','knife','seawind','changye'],
+    recs:[['二创剪辑','30s×3','¥900','按期'],['产品短片','15s','¥3,600','延期 1 天']] },
+  '林一': { type:'个人创作者', badge:'L1', done:2, rating:4.8, onTime:95, deposit:2000,
+    tag:'二创 / 短片剪辑', months:2,
+    works:['knife','gasless'],
+    recs:[['二创剪辑','30s','¥500','按期'],['老照片纪念片','15s','¥680','按期']] }
+};
+
+function openProfile(name){
+  const p = PEOPLE[name];
+  if (!p){
+    openModal(`<h2>${esc(name)}</h2><div class="sub">这个账号还没有公开作品墙。</div>
+      <div class="actions"><button class="solid" data-close>知道了</button></div>`);
+    return;
+  }
+  const wall = p.works.map(id => {
+    const c = caseById(id); if (!c) return '';
+    return `<figure>
+      <img src="${c.cover}" alt="${esc(c.title)}">
+      <figcaption>${esc(c.title)}<br>
+        <span style="color:#C8A46A">¥${c.price.from} 起</span> · ${c.price.days} 个工作日
+      </figcaption>
+      <button class="lnk" style="margin:6px 0 0" data-inquiry="${c.id}">按这条询价 →</button>
+    </figure>`;
+  }).join('');
+  const recs = p.recs.map(([cat, spec, money2, state2]) => `<div class="rec">
+      <span><b>${cat}</b> · ${spec}</span><span>${money2}</span>
+      <span class="${state2.includes('延') ? 's' : 'e'}">${state2}</span></div>`).join('');
+  openModal(`
+    <h2>${esc(name)} <span class="tier ${p.type === '企业' ? 'B' : 'C'}">${p.type}${p.badge ? ' ' + p.badge : ''}</span></h2>
+    <div class="sub">${esc(p.tag)} · 入驻 ${p.months} 个月 · 保证金 ${money(p.deposit)}</div>
+    <div class="stats">
+      <div>完成订单<b>${p.done}</b></div>
+      <div>客户评分<b>${p.rating}</b></div>
+      <div>按期率<b>${p.onTime}%</b></div>
+      <div>纠纷<b>0</b></div>
+    </div>
+    <div class="lbl">作品墙</div>
+    <div class="wall">${wall}</div>
+    <div class="lbl">最近交付</div>
+    ${recs}
+    <div class="actions"><button class="ghost" data-close>关闭</button>
+      <button class="solid" data-close>约这家</button></div>`, true);
+}
+
+const STUDIOS = [  { name:'第七场', tag:'AI 短片 / 婚礼 / 漫剧' },
+  { name:'青苔影像', tag:'实拍 + 生成混合' },
+  { name:'无隅工作室', tag:'纯生成 · 投放片' }
+];
+
+/* ============ 状态 ============ */
+const state = { role:'client', tab:'cases', caseId:null, rfqId:null, shot:0, provider:'company', clientKind:'biz' };
+const ME_CLIENT = '栖迟民宿 · 市场';
+const ME_PERSON = '个人客户 · 小周';
+const clientName = () => (state.clientKind === 'biz' ? ME_CLIENT : ME_PERSON);
+const myName = () => (S.user ? S.user.name : clientName());
+const ME_STUDIO = '第七场';
+const ME_SOLO = { name:'林一', level:'L1', done:2, rating:4.8, deposit:2000 };
+
+/* 平台服务费：创作者侧 10% + 客户侧 5%，双向收取 */
+const CREATOR_FEE = 0.10;
+const CLIENT_FEE = 0.05;
+const feeSplit = (quote) => {
+  const net = Math.round(quote);
+  return {
+    quote: net,
+    clientPay: Math.round(net * (1 + CLIENT_FEE)),
+    clientFee: Math.round(net * CLIENT_FEE),
+    creatorFee: Math.round(net * CREATOR_FEE),
+    creatorNet: Math.round(net * (1 - CREATOR_FEE))
+  };
+};
+
+/* 个人客户发布额度：新人 2 单/月，按履约解锁 */
+const CLIENT_QUOTA = { level:'新人', limit:2, used:0,
+  next:[{ need:2, limit:5, tip:'完成 2 单且无争议' },{ need:5, limit:10, tip:'完成 5 单且评分 ≥ 4.5' }] };
+const quotaLeft = () => Math.max(0, CLIENT_QUOTA.limit - CLIENT_QUOTA.used);
+
+/* ---------- 后端连接状态 ---------- */
+const S = { online:false, token:null, user:null, quota:null };
+const TOKEN_KEY = 'scene07_token';
+const loadedComments = new Set();
+
+async function api(path, opts = {}){
+  const headers = Object.assign({ 'content-type': 'application/json' }, opts.headers || {});
+  if (S.token) headers.authorization = 'Bearer ' + S.token;
+  const r = await fetch(path, Object.assign({}, opts, { headers }));
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+  return j;
+}
+function quotaInfo(){
+  if (S.quota) return { used: S.quota.used, limit: S.quota.limit,
+    level: S.user && S.user.kind === 'company' ? '企业' : '新人' };
+  return { used: CLIENT_QUOTA.used, limit: CLIENT_QUOTA.limit, level: CLIENT_QUOTA.level };
+}
+
+/* 打开需求时把服务端报价合并进来 */
+async function loadRfq(id){
+  if (!S.online) return;
+  try {
+    const r = await api('/api/rfqs/' + id);
+    const q = rfqById(id);
+    if (!q) return;
+    if (Array.isArray(r.bids)) q.bids = r.bids;
+    if (state.tab === 'rfq' && state.rfqId === id) render();
+  } catch (e) { /* ignore */ }
+}
+/* 打开案例时把服务端留言合并进来（每个案例每会话只拉一次） */
+function loadComments(caseId){
+  if (!S.online || loadedComments.has(caseId)) return;
+  loadedComments.add(caseId);
+  api('/api/cases/' + caseId + '/comments').then(r => {
+    const c = caseById(caseId);
+    if (!c) return;
+    (r.items || []).forEach(it => c.comments.push(it));
+    if (state.caseId === caseId) render();
+  }).catch(() => {});
+}
+
+/* 订单等级：金额区间 → 个人可接的最低等级；企业不受限 */
+const TIERS = [
+  { code:'D', min:0,     max:1000,   solo:'L0', need:0 },
+  { code:'C', min:1000,  max:5000,   solo:'L1', need:0 },
+  { code:'B', min:5000,  max:20000,  solo:'L2', need:3 },
+  { code:'A', min:20000, max:1e12,   solo:'L3', need:8 }
+];
+const tierOf = (q) => {
+  const amt = (q.budget[0] + q.budget[1]) / 2;
+  return TIERS.find(t => amt >= t.min && amt < t.max) || TIERS[2];
+};
+const soloRank = (lv) => Number(String(lv).replace(/\D/g, '')) || 1;
+function canAccept(q){
+  if (state.provider === 'company') return { ok:true, t:tierOf(q), reason:'' };
+  const t = tierOf(q);
+  const ok = soloRank(ME_SOLO.level) >= soloRank(t.solo);
+  return { ok, t, reason: ok ? '' : `需 ${t.solo} · 已完成 ${t.need} 单` };
+}
+
+const $ = (s) => document.querySelector(s);
+const view = $('#view');
+
+/* ============ 工具 ============ */
+const money = (n) => '¥' + n.toLocaleString('zh-CN');
+const fmt = (s) => { const m = Math.floor(s/60), r = Math.round(s%60); return (m<10?'0':'')+m+':'+(r<10?'0':'')+r; };
+const currentCase = () => (state.caseId ? caseById(state.caseId) : null);
+
+/* 只更新提示词面板与行高亮，不重建 DOM（避免视频被重载） */
+function paintShot(){
+  const c = currentCase(); if (!c) return;
+  const s = c.shots[state.shot]; if (!s) return;
+  document.querySelectorAll('.shot').forEach(el => el.setAttribute('aria-current', String(Number(el.dataset.i) === state.shot)));
+  const set = (id, v) => { const el = document.getElementById(id.slice(1)); if (el) el.textContent = v; };
+  set('#pTitle', s.title); set('#pNo', s.n);
+  set('#pRes', s.res || '1080p'); set('#pRatio', s.ratio || '16:9');
+  set('#pCam', s.size + ' · ' + s.cam);
+  set('#pPrompt', s.prompt); set('#pNeg', s.neg);
+  const now = document.getElementById('filmNow');
+  if (now && s.s !== undefined) now.textContent = s.n + ' · ' + fmt(s.s);
+}
+
+function bindFilm(c){
+  const v = document.getElementById('film');
+  if (!v || !(c.auto || c.videoSrc)) return;
+  const withTimes = (c.shots || []).filter(s => typeof s.s === 'number');
+  if (!withTimes.length) return;
+  v.addEventListener('timeupdate', () => {
+    const t = v.currentTime;
+    const i = c.shots.findIndex(s => typeof s.s === 'number' && t >= s.s && t < s.e);
+    if (i >= 0 && i !== state.shot){ state.shot = i; paintShot(); }
+  });
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const caseById = (id) => CASES.find(c => c.id === id);
+const rfqById = (id) => RFQS.find(q => q.id === id);
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 1600); }
+
+/* ============ 布局 ============ */
+function renderChrome(){
+  const badge = document.getElementById('modeBadge');
+  if (badge){
+    badge.textContent = S.online ? (S.token ? '已连后端' : '未登录') : '演示模式';
+    badge.style.color = S.online && S.token ? 'var(--mint)' : 'var(--dimmer)';
+  }
+  $('#whoami').textContent = S.user
+    ? '已登录 · ' + S.user.name + (S.user.kind === 'company' ? '（企业）' : '（个人）')
+    : (state.role === 'client'
+      ? '客户 · ' + clientName() + (state.clientKind === 'biz' ? '（企业）' : '（个人）')
+      : (state.role === 'solo'
+        ? '个人创作者 · ' + (S.user ? S.user.name : ME_SOLO.name) + '（' + ME_SOLO.level + '）'
+        : '制作方 · ' + ME_STUDIO + '（企业）'));
+  $('#primary').textContent = state.role === 'client' ? '发布需求' : '入驻资料';
+  document.querySelectorAll('#role button').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.role === state.role));
+  });
+  const mine = state.role === 'client'
+    ? RFQS.filter(q => q.client === myName()).length
+    : RFQS.reduce((n, q) => n + q.bids.filter(b => b.studio === ME_STUDIO).length, 0);
+  const nav = [
+    { id:'cases', name:'案例库', n: CASES.length },
+    ...(state.role !== 'client' ? [{ id:'profile', name:'入驻资料', n:'◆' }] : []),
+    ...(state.role === 'client' ? [{ id:'profile', name: state.clientKind === 'person' ? '实名认证' : '企业认证', n:'◆' }] : []),
+    ...(state.role !== 'client' ? [{ id:'works', name:'我的作品墙', n: WORK_CACHE.length || '+' }] : []),
+    ...(state.role !== 'client' ? [{ id:'upload', name:'上传成片', n:'+' }] : []),
+    { id:'rfq', name:'需求广场', n: RFQS.length },
+    { id:'orders', name: state.role === 'client' ? '我的订单' : '接单记录', n: MY_ORDERS.length || '00' },
+    { id:'mine', name: state.role === 'client' ? '我的需求' : '我的报价', n: mine },
+    ...(state.role !== 'client' ? [{ id:'entry', name:'入驻与规则', n:'§' }] : [])
+  ];
+  $('#nav').innerHTML = nav.map(i => `<button class="nav-i" data-tab="${i.id}" aria-pressed="${state.tab === i.id}">
+      <span>${i.name}</span><b>${typeof i.n === 'number' ? String(i.n).padStart(2,'0') : i.n}</b></button>`).join('');
+  $('#railNote').innerHTML = state.role === 'client'
+    ? `看案例 → 留言 → 按案例规格询价<br>个人也能发需求，微单 3 分钟起发
+       ${state.clientKind === 'person' ? `<br>本月发布额度 <b style="color:#C8A46A">${quotaInfo().used} / ${quotaInfo().limit}</b>（${quotaInfo().level}）` : ''}
+       <div class="role" style="margin:10px 0 0">
+         <button data-clientkind="biz" aria-pressed="${state.clientKind === 'biz'}">企业客户</button>
+         <button data-clientkind="person" aria-pressed="${state.clientKind === 'person'}">个人客户</button>
+       </div>`
+    : `已入驻：<b>${STUDIOS.map(s => s.name).join(' · ')}</b><br>需求广场里的单子都可以报价`;
+}
+
+/* ============ 视图：案例库 ============ */
+function viewCases(){
+  const cards = CASES.map(c => `
+    <button class="card" data-case="${c.id}">
+      <div class="cover"><img src="${c.cover}" alt="${esc(c.title)}"><span class="tag">${c.tag}</span></div>
+      <div class="meta">
+        <h3>${esc(c.title)}</h3>
+        <div class="row">${esc(c.client)}<i>·</i>${c.dur}<i>·</i>${c.ratio}</div>
+        <div class="row"><i>${c.year} 交付 · ${c.shotsN} 镜 · ${c.price.level}精细度 · 含 ${c.price.revisions} 次修改</i></div>
+        <div class="price"><b>${money(c.price.from)}</b><span>起 / ${c.price.days} 个工作日</span></div>
+      </div>
+    </button>`).join('');
+  return `<div class="head"><h1>案例库</h1><span class="count">${CASES.length} 个已交付项目</span>
+      <span class="right">看完可以直接按规格询价</span></div>
+    <div class="grid">${cards}</div>`;
+}
+
+/* ============ 视图：案例详情 ============ */
+function viewCase(){
+  const c = caseById(state.caseId);
+  const s = c.shots[state.shot] || c.shots[0];
+  const cmts = c.comments.length ? c.comments.map(m => `
+      <div class="cmt-i ${m.reply ? 'reply' : ''}">
+        <div class="who"><b>${esc(m.who)}</b><span class="badge">${m.role}</span><span>${m.time}</span></div>
+        <p>${esc(m.text)}</p>
+      </div>`).join('') : `<div class="empty">还没有留言。第一个问题通常从「这个能不能改成我的产品」开始。</div>`;
+
+  return `<button class="back" data-back>← 返回案例库</button>
+    <div class="dhead">
+      <div><h2>${esc(c.title)}</h2>
+        <div class="sub">${esc(c.client)} · ${c.dur} · ${c.ratio} · ${c.shotsN} 镜 · ${c.year} 交付</div></div>
+      <div class="acts"><span class="ghost">已交付</span>
+        <button class="solid" data-inquiry="${c.id}">按这个规格询价</button></div>
+    </div>
+    <div class="dbody">
+      <div>
+        ${(c.auto || c.videoSrc) ? `<div class="filmwrap">
+          <video id="film" src="${c.videoSrc || 'assets/film.mp4'}" controls preload="metadata" poster="${c.cover}"></video>
+          <div class="filmbar"><span id="filmNow">S01 · 00:00</span>
+            <span>点下面任意镜头，视频跳到那一帧；播放时自动高亮当前镜</span></div>
+        </div>` : ''}
+        <div class="sb-head"><h3>分镜表（${c.shots.length === c.shotsN ? '全部 ' + c.shotsN + ' 镜' : '前 ' + c.shots.length + ' 镜 / 共 ' + c.shotsN + ' 镜'}）</h3><span class="hint">${c.auto ? '由成片自动拆解 · 首帧为抽帧' : '点镜头看提示词'}</span></div>
+        <div id="shots">${c.shots.map((x, i) => `
+          <button class="shot" data-shot="${i}" aria-current="${i === state.shot}">
+            <span class="no">${x.n}${c.auto && x.s !== undefined ? `<em>${fmt(x.s)}</em>` : ''}</span>
+            <span class="thumb">${x.img ? `<img src="${x.img}" alt="${esc(x.title)}">` : `<span>${x.n}</span>`}</span>
+            <span class="txt"><b>${esc(x.title)}</b><em>${x.size} · ${x.cam} · ${esc(x.desc)}</em></span>
+            <span class="dur">${x.t}</span>
+          </button>`).join('')}</div>
+
+        <div class="quote">
+          <div class="q-top">
+            <span class="k">参考报价</span>
+            <strong>${money(c.price.from)}<i>起</i></strong>
+            <span class="spec">${c.dur} ｜ ${c.price.level}精细度<br>含 ${c.price.revisions} 次修改 ｜ ${c.price.days} 个工作日</span>
+          </div>
+          <div class="q-items">${c.price.items.map(([k, v]) => `<div class="qi"><span>${k}</span><b>${money(v)}</b></div>`).join('')}</div>
+          <div class="q-flow"><b>简报</b><i>→</i><b>分镜表</b><i>→</i><b>首帧确认</b><i>→</i><b>成片</b><i>·</i>首帧确认后才进合成</div>
+          <div class="q-act">
+            <button class="solid" data-inquiry="${c.id}">按这个规格询价</button>
+            <span class="note">会带着这份分镜和报价发到需求广场<br>制作公司按你的预算报价</span>
+          </div>
+        </div>
+
+        <div class="cmt">
+          <h3>留言${c.comments.length ? '（' + c.comments.length + '）' : ''}</h3>
+          <div class="cmt-list">${cmts}</div>
+          <div class="cmt-form">
+            <textarea id="cmtText" placeholder="问点什么，比如「改成我们产品要多少钱」「能不能只做仪式那段」"></textarea>
+            <div class="foot">
+              <button class="solid" data-cmt="${c.id}">发布留言</button>
+              <span>${state.role === 'client' ? '以 ' + clientName() + ' 身份留言' : '以 ' + ME_STUDIO + ' 身份回复'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <h3>提示词 / PROMPT</h3>
+        <div class="ph"><b id="pTitle">${esc(s.title)}</b><span id="pNo">${s.n}</span></div>
+        <div class="kv"><k>模型</k><v>agnes-image-2.5-flash</v></div>
+        <div class="kv"><k>分辨率</k><v id="pRes">${s.res || '1080p'}</v></div>
+        <div class="kv"><k>画幅</k><v id="pRatio">${s.ratio || '16:9'}</v></div>
+        <div class="kv"><k>景别 / 运镜</k><v id="pCam">${s.size} · ${s.cam}</v></div>
+        <div class="lbl">正向提示词</div>
+        <pre class="prompt" id="pPrompt">${esc(s.prompt)}</pre>
+        <div class="lbl">负向提示词</div>
+        <div class="neg" id="pNeg">${esc(s.neg)}</div>
+        <button class="copy" id="copy">复制提示词</button>
+      </aside>
+    </div>`;
+}
+
+/* ============ 视图：需求广场 ============ */
+function viewRfqs(){
+  const list = RFQS.map(q => {
+    const g = canAccept(q);
+    return `
+    <button class="rfq" data-rfq="${q.id}">
+      <div>
+        <h3>${esc(q.title)}<span class="tier ${g.t.code}">${g.t.code} 级</span>${q.cat === 'AI 二创' ? `<span class="tier" style="color:#C8A46A;border-color:rgba(200,164,106,.5)">二创</span>` : ''}</h3>
+        <div class="row">${esc(q.client)}<i>·</i>${q.cat}<i>·</i>${q.dur}<i>·</i>${q.level}精细度<i>·</i>${q.deadline}</div>
+        <div class="row"><span class="b">预算 ${money(q.budget[0])}–${money(q.budget[1])}</span><i>·</i>已有 ${q.bids.length} 家报价${g.ok ? '' : `<i>·</i><span style="color:#C8A46A">你的等级暂不可接</span>`}</div>
+      </div>
+      <div class="side2"><b>${q.bids.length ? money(Math.min(...q.bids.map(b => b.price))) + ' 起' : '暂无报价'}</b>${q.bids.length ? '当前最低' : '等你来报'}</div>
+    </button>`;
+  }).join('');
+  return `<div class="head"><h1>需求广场</h1><span class="count">${RFQS.length} 条需求</span>
+      <span class="right">${state.role === 'client' ? '客户发布的需求，制作方在此报价' : (state.provider === 'company' ? '企业身份：A / B / C 级单都可接' : `个人身份：${ME_SOLO.level} · 当前只能接 C 级单`)}</span></div>
+    ${list}`;
+}
+
+/* ============ 视图：需求详情 ============ */
+function viewRfq(){
+  const q = rfqById(state.rfqId);
+  const ref = q.refCase ? caseById(q.refCase) : null;
+  const bids = q.bids.length ? q.bids.map(b => `
+      <div class="bid">
+        <div><div class="who"><b data-profile="${esc(b.studio)}">${esc(b.studio)}</b><span>${b.time}</span>
+            <button class="lnk" data-profile="${esc(b.studio)}">看作品墙 →</button></div>
+          <div class="note">${esc(b.note)}</div></div>
+        <div class="money"><b>${money(b.price)}</b><span>${b.days} 个工作日</span>
+          ${state.role === 'client' && q.client === myName() ? `<button class="copy" style="margin-top:6px" data-orderbid="${esc(b.studio)}|${b.price}|${b.days}|${esc(q.title)}">接受这个报价</button>` : ''}
+        </div>
+      </div>`).join('') : `<div class="empty">还没有制作公司报价。这类单子通常 24 小时内会有 3–5 家响应。</div>`;
+  const g = canAccept(q);
+  const canBid = state.role !== 'client' && g.ok;
+  const blocked = state.role !== 'client' && !g.ok;
+  const isMine = q.client === myName();
+
+  return `<button class="back" data-back>← 返回需求广场</button>
+    <div class="dhead">
+      <div><h2>${esc(q.title)}<span class="tier ${g.t.code}">${g.t.code} 级</span></h2>
+        <div class="sub">${esc(q.client)} · ${q.cat} · ${q.dur} · ${q.level}精细度 · ${q.deadline}</div></div>
+      <div class="acts"><span class="ghost">预算 ${money(q.budget[0])}–${money(q.budget[1])}</span>
+        ${canBid ? `<button class="solid" data-bid="${q.id}">提交报价</button>` : ''}
+        ${blocked ? `<button class="solid line" style="opacity:.8;cursor:not-allowed;border-color:rgba(200,164,106,.65);color:#E0C08A">需 ${g.t.solo} 才能接</button>` : ''}</div>
+    </div>
+    <div class="dbody">
+      <div>
+        <div class="sb-head"><h3>需求说明</h3><span class="hint">${isMine && state.role === 'client' ? '你发布的需求' : '客户公开的需求'}</span></div>
+        <div class="desc">${esc(q.desc)}</div>
+        ${q.lic ? `<div class="gate" style="margin-top:10px">二创单 · 客户已声明素材授权并担保权属；平台仅对交付质量负责。争议中的版权主张由客户承担。</div>` : ''}
+        ${ref ? `<div class="sb-head" style="margin-top:18px"><h3>参考案例</h3></div>
+          <button class="rfq" data-case="${ref.id}" style="width:100%">
+            <div><h3>${esc(ref.title)}</h3><div class="row">${esc(ref.client)}<i>·</i>${ref.dur}<i>·</i>${ref.price.level}精细度 · 含 ${ref.price.revisions} 次修改</div></div>
+            <div class="side2"><b>${money(ref.price.from)} 起</b>参考价</div>
+          </button>` : ''}
+        <div class="sb-head" style="margin-top:20px"><h3>已收到报价（${q.bids.length}）</h3><span class="hint">按时效排序</span></div>
+        ${bids}
+      </div>
+      <aside class="panel">
+        <h3>报价参考 / QUOTE</h3>
+        <div class="kv" style="border-top:0"><k>片长</k><v>${q.dur}</v></div>
+        <div class="kv"><k>精细度</k><v>${q.level}</v></div>
+        <div class="kv"><k>预算区间</k><v>${money(q.budget[0])}–${money(q.budget[1])}</v></div>
+        <div class="kv"><k>画幅</k><v>${q.ratio}</v></div>
+        <div class="kv"><k>截止</k><v>${q.deadline}</v></div>
+        <div class="lbl">报价怎么算的</div>
+        <div class="neg" style="color:#9AA7A1">基础单价 × 秒数 × 精细度系数 + 修改轮次。
+          <br>标准 1.0 ／ 精修 1.6 ／ 电影级 2.4；每多一轮修改按成片价 8% 计。</div>
+        <div class="lbl">费用拆分（以预算中位为例）</div>
+        <div class="neg" style="color:#9AA7A1">${
+          (() => {
+            const f = feeSplit((q.budget[0] + q.budget[1]) / 2);
+            return `创作者报价 ${money(f.quote)}<br>客户实付 ${money(f.clientPay)}（含 5% 服务费 ${money(f.clientFee)}）<br>
+              创作者到手 ${money(f.creatorNet)}（扣 10% 服务费 ${money(f.creatorFee)}）<br>
+              平台合计 ${money(f.clientFee + f.creatorFee)}`;
+          })()
+        }</div>
+        ${canBid ? `<button class="copy" data-bid="${q.id}">我要报这个价</button>` : ''}
+        ${blocked ? `<div class="gate">此单为 ${g.t.code} 级（预算 ${money(q.budget[0])}–${money(q.budget[1])}）。个人创作者需 <b>${g.t.solo}</b>（在本平台完成 ≥ ${g.t.need} 单）才能报价；企业不受限。</div>` : ''}
+      </aside>
+    </div>`;
+}
+
+/* ============ 视图：我的 ============ */
+function viewMine(){
+  if (state.role === 'client'){
+    const mine = RFQS.filter(q => q.client === myName());
+    if (!mine.length) return `<div class="head"><h1>我的需求</h1></div>
+      <div class="empty">还没有发过需求。去案例库挑一条，点「按这个规格询价」就能带上完整分镜和报价。</div>`;
+    return `<div class="head"><h1>我的需求</h1><span class="count">${mine.length} 条</span></div>` +
+      mine.map(q => `<button class="rfq" data-rfq="${q.id}"><div><h3>${esc(q.title)}</h3>
+        <div class="row">${q.dur}<i>·</i>${q.level}精细度<i>·</i>${q.deadline}</div>
+        <div class="row"><span class="b">已收到 ${q.bids.length} 家报价</span></div></div>
+        <div class="side2"><b>${q.bids.length ? money(Math.min(...q.bids.map(b => b.price))) + ' 起' : '等待报价'}</b></div></button>`).join('');
+  }
+  const rows = [];
+  RFQS.forEach(q => q.bids.filter(b => b.studio === ME_STUDIO).forEach(b => rows.push({ q, b })));
+  if (!rows.length) return `<div class="head"><h1>我的报价</h1></div>
+    <div class="empty">还没有报过价。去需求广场挑一条，填价格和工期就行。</div>`;
+  return `<div class="head"><h1>我的报价</h1><span class="count">${rows.length} 条</span></div>` +
+    rows.map(({ q, b }) => `<button class="rfq" data-rfq="${q.id}">
+      <div><h3>${esc(q.title)}</h3>
+        <div class="row">${esc(q.client)}<i>·</i>${q.dur}<i>·</i>${b.days} 个工作日</div>
+        <div class="row"><i>${esc(b.note)}</i></div></div>
+      <div class="side2"><b>${money(b.price)}</b>已提交</div></button>`).join('');
+}
+
+/* ============ 视图：上传成片 ============ */
+function viewUpload(){
+  const online = /:4321$/.test(location.host) || location.hostname === '127.0.0.1' && location.port === '4321';
+  return `<div class="head"><h1>上传成片</h1><span class="count">自动拆镜</span>
+      <span class="right">mp4 / mov · 建议 1080p 以上 · 单条 ≤ 2GB</span></div>
+    ${online ? '' : `<div class="gate" style="margin-bottom:12px">当前是纯静态页面，上传不会真的分析。
+      请用 <b>http://127.0.0.1:4321/</b> 打开（本地分析服务），上传才会真跑 ffmpeg。</div>`}
+    <div id="upWrap">
+      <div class="drop" id="drop">
+        <b>把成片拖进来</b>
+        <span>会真的读取你的文件：切镜头 → 抽首帧 → 出时间码，再把结果做成一条案例</span>
+        <div class="pick" id="pick">选择文件</div>
+        <div class="pick" id="sample" style="margin-left:8px">用示例片试一下</div>
+        <input type="file" id="fileIn" accept="video/*" hidden>
+      </div>
+      <div class="steps" id="steps" hidden>
+        <div class="bar"><i id="prog"></i></div>
+        <div id="stepList"></div>
+      </div>
+      <div id="upResult"></div>
+    </div>`;
+}
+
+function bindUpload(){
+  const pick = $('#pick'), fileIn = $('#fileIn'), drop = $('#drop'), sample = $('#sample');
+  if (!pick || !drop) return;
+  pick.addEventListener('click', () => fileIn.click());
+  fileIn.addEventListener('change', () => { if (fileIn.files[0]) startAnalyze(fileIn.files[0]); });
+  if (sample) sample.addEventListener('click', () => runSample());
+  ['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) startAnalyze(f);
+  });
+}
+
+function stepRows(){ return $('#stepList'); }
+
+function analyzeStarted(){
+  const drop = $('#drop'), steps = $('#steps');
+  if (drop) drop.style.display = 'none';
+  if (steps) steps.hidden = false;
+}
+
+function setSteps(arr){
+  const list = stepRows(); if (!list) return;
+  list.innerHTML = arr.map((s, i) => `<div class="step ${i === arr.length - 1 ? 'on' : 'done'}">
+    <span class="tick"></span><span>${s}</span></div>`).join('');
+}
+
+function finishAnalyze(r){
+  const name = (r.file || '成片.mp4').replace(/\.[^.]+$/, '');
+  const total = r.shotCount || 0;
+  const meta = r.meta || {};
+  const coverShot = (r.shots || []).find(s => s.thumb);
+  const newCase = {
+    id: 'up' + Date.now(), cat: '自动拆解', title: name + '（自动拆解）',
+    client: '刚上传的成片', dur: `${Math.floor((meta.duration||0)/60)}min${Math.round((meta.duration||0)%60)}s`,
+    ratio: meta.w && meta.h ? (meta.w > meta.h ? '16:9' : '9:16') : '16:9',
+    shotsN: total, year: '2026.11', auto: true,
+    videoSrc: r.videoUrl || 'assets/film.mp4',
+    cover: coverShot ? coverShot.thumb : 'assets/film-poster.jpg',
+    tag: `${total} 镜 · 自动拆解`,
+    price: { from: 3800, level: '标准', revisions: 2, days: 3,
+      items: [['分镜与脚本',800],['首帧',1250],['合成剪辑',900],['配乐字幕',550],['项目管理',300]] },
+    comments: [],
+    shots: (r.shots || []).map(s => ({
+      n: s.n, s: s.start, e: s.end, t: s.dur.toFixed(1) + 's',
+      size: '待标注', cam: '待标注', title: '第 ' + s.n.replace('S','') + ' 镜',
+      desc: '（这一镜的描述还没写：可人工补，或接视觉模型自动生成）',
+      img: s.thumb, res: meta.h ? meta.h + 'p' : '1080p', ratio: meta.w > meta.h ? '16:9' : '9:16',
+      prompt: '（提示词待生成）', neg: '（待补）'
+    }))
+  };
+  CASES.unshift(newCase);
+  state.tab = 'cases'; state.caseId = newCase.id; state.shot = 0;
+  render();
+  toast(`分析完成：${total} 镜 · 用时已记录`);
+}
+
+function pollJob(id, onDone){
+  const prog = $('#prog');
+  const tick = () => {
+    fetch('/api/job/' + id, { cache: 'no-store' }).then(r => r.json()).then(j => {
+      if (j.status === 'done'){
+        if (prog) prog.style.width = '100%';
+        setSteps(['上传完成', '切分镜头（场景检测）', '抽取首帧', `识别完成 · ${j.result.shotCount} 镜`]);
+        setTimeout(() => {
+          if (onDone) { onDone(j.result); return; }
+          try { finishAnalyze(j.result); }
+          catch (e) { const box = $('#upResult'); if (box) box.innerHTML = `<div class="gate">渲染失败：${esc(String(e && e.message || e))}</div>`; }
+        }, 350);
+        return;
+      }
+      if (j.status === 'error'){
+        $('#upResult').innerHTML = `<div class="gate">分析失败：${esc(j.error || '未知错误')}</div>`;
+        return;
+      }
+      const pct = j.progress || 5;
+      if (prog) prog.style.width = Math.min(96, pct) + '%';
+      setSteps(['上传完成', '切分镜头（场景检测）', `抽取首帧 ${pct}%`]);
+      setTimeout(tick, 800);
+    }).catch(() => setTimeout(tick, 1200));
+  };
+  setTimeout(tick, 500);
+}
+
+function startAnalyze(file, nameOverride){
+  analyzeStarted();
+  const nm = nameOverride || file.name || '成片.mp4';
+  setSteps([`上传中 · ${nm}（${(file.size/1048576).toFixed(1)} MB）`]);
+  const prog = $('#prog');
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/analyze');
+  xhr.setRequestHeader('X-Filename', encodeURIComponent(nm));
+  xhr.upload.onprogress = (e) => {
+    if (!e.lengthComputable) return;
+    const pct = Math.round(e.loaded / e.total * 100);
+    if (prog) prog.style.width = Math.min(20, Math.round(pct * 0.2)) + '%';
+    if (pct >= 100) setSteps(['上传完成', '切分镜头（场景检测）', '抽取首帧']);
+  };
+  xhr.onload = () => {
+    try {
+      const r = JSON.parse(xhr.responseText);
+      if (!r.ok || !r.jobId) throw new Error(r.error || '没有拿到任务号');
+      pollJob(r.jobId);
+    } catch (e) {
+      $('#upResult').innerHTML = `<div class="gate">提交失败：${esc(String(e.message || e))}</div>`;
+    }
+  };
+  xhr.onerror = () => {
+    $('#upResult').innerHTML = `<div class="gate">连不上本地分析服务。请用 http://127.0.0.1:4321/ 打开本页。</div>`;
+  };
+  xhr.send(file);
+}
+
+function runSample(){
+  analyzeStarted();
+  setSteps(['读取示例片…']);
+  fetch('/assets/sample-demo.mp4').then(r => r.blob()).then(blob => {
+    startAnalyze(blob, 'sample-demo.mp4');
+  }).catch(e => {
+    const box = $('#upResult');
+    if (box) box.innerHTML = `<div class="gate">读取示例片失败：${esc(String(e.message || e))}</div>`;
+  });
+}
+
+/* ============ 视图：入驻与规则 ============ */
+function viewEntry(){
+  const co = state.provider === 'company';
+  const coItems = [['营业执照',1],['法人身份',1],['对公账户',1],['开票资质',1],['合同样本 2 份',0]];
+  const soloItems = [['实名认证 + 人脸',1],['银行卡四要素',1],['作品 3 件',1],['履约保证金 ¥2,000',1],['完成订单 2 / 3（升 L2）',0]];
+  const chk = (items) => items.map(([t,ok]) => `<div class="chk ${ok?'ok':'wait'}"><span class="dot2">${ok?'✓':''}</span>${t}<b>${ok?'已通过':'待补'}</b></div>`).join('');
+
+  return `<div class="head"><h1>入驻与规则</h1><span class="count">居间撮合</span>
+      <span class="right">平台只撮合与审核；合同与赔付由甲乙双方直签约定</span></div>
+
+    <div class="desc">本平台为<b>居间方</b>：平台负责真实性审核、撮合、存证与违规处理，<b>不承担</b>交付质量、版权与款项的连带责任。
+      订单合同由客户与创作者直签，平台提供服务模板与过程记录；出现争议时平台提供证据，不代替双方裁决。</div>
+
+    <div class="head" style="margin-top:22px"><h1 style="font-size:14px">入驻通道</h1><span class="right" style="font-size:11px">点卡片切换演示身份</span></div>
+    <div class="cols2">
+      <div class="pcard ${co?'on':''}" data-provider="company" style="cursor:pointer">
+        <h3>企业 / 工作室</h3>
+        <div class="sub">可接 A / B / C 全部等级 · 平台开票</div>
+        ${chk(coItems)}
+        <div class="ladder"><span style="font-size:11.5px;color:var(--dim)">审核进度 4 / 5</span>
+          <div class="bar2"><i style="width:80%"></i></div></div>
+      </div>
+      <div class="pcard ${co?'':'on'}" data-provider="solo" style="cursor:pointer">
+        <h3>个人创作者</h3>
+        <div class="sub">当前 ${ME_SOLO.level} · 完成 ${ME_SOLO.done} 单 · 评分 ${ME_SOLO.rating} · 保证金 ${money(ME_SOLO.deposit)}</div>
+        ${chk(soloItems)}
+        <div class="ladder"><span style="font-size:11.5px;color:var(--dim)">距 L2 还差 1 单（解锁 B 级单）</span>
+          <div class="bar2"><i style="width:66%"></i></div></div>
+      </div>
+    </div>
+
+    <div class="head" style="margin-top:24px"><h1 style="font-size:14px">订单等级与接单权限</h1>
+      <span class="right" style="font-size:11px">企业不受限；个人按完成单数逐级解锁</span></div>
+    <table class="rule">
+      <tr><th>等级</th><th>预算区间</th><th>谁能接</th><th>保证金</th></tr>
+      <tr><td>D 级</td><td>≤ ¥1,000</td><td>企业 · 个人 <b>L0</b>（新手可接，二创微单）</td><td>免保</td></tr>
+      <tr><td>C 级</td><td>¥1,000–5,000</td><td>企业 · 个人 <b>L1</b>（完成 0 单起）</td><td>¥2,000</td></tr>
+      <tr><td>B 级</td><td>¥5,000–20,000</td><td>企业 · 个人 <b>L2</b>（完成 ≥ 3 单，评分 ≥ 4.5）</td><td>¥5,000</td></tr>
+      <tr><td>A 级</td><td>&gt; ¥20,000</td><td>企业 · 个人 <b>L3</b>（完成 ≥ 8 单，评分 ≥ 4.8，无纠纷）</td><td>按单 8%</td></tr>
+    </table>
+    <div class="gate" style="margin-top:12px">D 级是 AI 二创微单专区：≤ ¥1,000、免保证金、走平台服务协议（不签逐单合同），
+      素材授权由客户声明并担保；平台只对交付质量负责，不对第三人版权主张兜底。</div>
+
+    <div class="head" style="margin-top:24px"><h1 style="font-size:14px">平台服务费与发布额度</h1>
+      <span class="right" style="font-size:11px">双向收取：客户 5% + 创作者 10%</span></div>
+    <table class="rule">
+      <tr><th>谁付</th><th>费率</th><th>示例（创作者报价 ¥10,000）</th></tr>
+      <tr><td>客户</td><td><b>5%</b></td><td>实付 ¥10,500</td></tr>
+      <tr><td>创作者</td><td><b>10%</b></td><td>到手 ¥9,000</td></tr>
+      <tr><td>平台合计</td><td><b>15%</b></td><td>收 ¥500 + ¥1,000 = ¥1,500</td></tr>
+    </table>
+    <div class="gate" style="margin-top:12px">报价以「创作者报价」为基准：客户看到的是含服务费总价，创作者看到的是扣费后到手价。
+      服务费不随订单等级变化，D 级微单同费率。</div>
+    <div class="gate" style="margin-top:12px">个人客户发布额度：<b>新人 2 单/月</b>；
+      完成 2 单且无争议 → 5 单/月；完成 5 单且评分 ≥ 4.5 → 10 单/月。企业客户不限量。</div>
+
+    <div class="head" style="margin-top:24px"><h1 style="font-size:14px">赔付责任</h1>
+      <span class="right" style="font-size:11px">写进三方合同，按顺序执行</span></div>
+    <table class="rule">
+      <tr><th>情形</th><th>客户</th><th>平台</th><th>创作者</th></tr>
+      <tr><td>逾期交付</td><td>按日获赔 0.5%，上限合同额 20%</td><td>先行赔付</td><td>全额追偿 + 扣信用分</td></tr>
+      <tr><td>两次修改后仍不达标</td><td>全额退款</td><td>承担 30%</td><td>承担 70%，扣保证金</td></tr>
+      <tr><td>创作者跑单 / 失联</td><td>先行全额赔付</td><td>垫付并追偿</td><td>没收保证金 + 黑名单</td></tr>
+      <tr><td>素材 / 版权侵权</td><td>客户提供的素材由客户担责</td><td>对外连带后追偿</td><td>创作者主责赔偿</td></tr>
+      <tr><td>二创版权主张</td><td>客户承担（素材授权由其声明并担保）</td><td>不兜底版权，仅担保交付质量</td><td>按客户指示完成，不承担权属</td></tr>
+      <tr><td>客户原因（素材延迟 / 变更）</td><td>按已完成工作量结算</td><td>不退服务费</td><td>已交付部分照付</td></tr>
+    </table>
+
+    <div class="gate" style="margin-top:16px">保证金走在线支付（微信 / 支付宝），<b>原路退回</b>：验收后申请，扣除平台应收费用后退回；
+      争议期间冻结，处理完解冻。纠纷池按佣金 1.5% 计提，不占用保证金。</div>`;
+}
+
+/* ============ 视图：我的作品墙 ============ */
+let WORK_CACHE = [];
+let pendingWork = null;
+
+function viewWorks(){
+  const shotPreview = (pendingWork && pendingWork.shots && pendingWork.shots.length)
+    ? `<div class="splitbox">
+         <div class="sb-h"><h4>自动拆出 ${pendingWork.shotCount} 个镜头</h4>
+           <span>审核通过后，客户在案例里看到的就是这张分镜表</span></div>
+         <div class="sb-grid">
+           ${pendingWork.shots.map((s, i) => `<figure>
+             <img src="${s.thumb}" alt="${s.n}">
+             <figcaption><b>${s.n}</b><span>${s.start.toFixed(1)}–${s.end.toFixed(1)}s</span></figcaption>
+             <input class="shnote" id="wn-${i}" placeholder="这一镜拍什么" value="${esc(s.note || '')}">
+             <textarea class="shnote shprompt" id="wp-${i}" rows="2" placeholder="提示词（给 AI 的指令）">${esc(s.prompt || '')}</textarea>
+           </figure>`).join('')}
+         </div>
+
+       </div>`
+    : '';
+  const form = pendingWork
+    ? `${shotPreview}
+       <div class="field"><label>作品标题</label>
+         <input id="wTitle" value="新作品 · ${pendingWork.meta ? pendingWork.meta.w + '×' + pendingWork.meta.h : ''}"></div>
+       <div class="row2">
+         <div class="field"><label>品类</label><select id="wCat"><option>AI 二创</option><option>产品宣传片</option><option>企业宣传片</option><option>AI 婚礼记录</option><option>小说漫剧</option></select></div>
+         <div class="field"><label>精细度</label><select id="wLevel"><option>标准</option><option>精修</option><option>电影级</option></select></div>
+       </div>
+       <div class="row2">
+         <div class="field"><label>这条片子报价（元）</label><input id="wPrice" type="number" value="3800"></div>
+         <div class="field"><label>含几次修改 / 几天</label>
+           <div class="rowline"><input id="wRev" type="number" value="2"><input id="wDays" type="number" value="5"></div></div>
+       </div>
+       <div class="steps" style="margin:0 0 12px">
+         <div class="step done"><span class="tick"></span><span>已拆出 ${pendingWork.shotCount} 个镜头，首帧已生成</span></div>
+       </div>
+       <button class="solid" data-wsubmit="1" style="width:100%;text-align:center">提交审核并上架</button>`
+    : `<div class="drop" id="wDrop">
+         <b>把成片拖进来</b>
+         <span>或者点下面选择文件 · 会自动切分镜、抽首帧，再让你给这条片子标价</span>
+         <div class="picks"><div class="pick" id="wPick">选择视频</div></div>
+         <input type="file" id="wFile" accept="video/*" hidden>
+       </div>
+       <div class="steps" id="wSteps" hidden><div class="bar"><i id="wProg"></i></div><div id="wStepList"></div></div>`;
+
+  const list = WORK_CACHE.length ? WORK_CACHE.map(w => {
+    const st = w.status === 'published' ? ['已上架', 'C'] : (w.status === 'reviewing' ? ['待审核', 'B'] : ['已驳回', 'A']);
+    return `<div class="rfq" style="cursor:default">
+      <div>
+        <h3>${esc(w.title)}<span class="tier ${st[1]}">${st[0]}</span></h3>
+        <div class="row">${esc(w.cat)}<i>·</i>${w.dur}<i>·</i>${w.shotsN} 镜<i>·</i>含 ${w.price.revisions} 次修改</div>
+        <div class="row"><span class="b">标价 ¥${w.price.from}</span>${w.note ? `<i>·</i>${esc(w.note)}` : ''}</div>
+      </div>
+      <div class="side2"><b>¥${w.price.from}</b>${w.price.days} 个工作日</div>
+    </div>`;
+  }).join('') : '<p class="empty">还没有作品。上传第一件，客户就能在你的作品墙里看到报价。</p>';
+
+  return `<div class="head"><h1>我的作品墙</h1><span class="count">${WORK_CACHE.length} 件作品</span>
+      <span class="right">上传 → 商务审核 → 上架，审核按提交顺序处理</span></div>
+    <div class="pcard" style="margin-bottom:16px">
+      <h3 style="margin-bottom:10px">上传新作品</h3>
+      ${form}
+    </div>
+    <div class="head" style="margin-top:6px"><h1 style="font-size:14px">已上传</h1></div>
+    ${list}`;
+}
+
+async function loadWorks(){
+  if (!S.online || !S.token) return;
+  try {
+    const r = await api('/api/cases?mine=1');
+    WORK_CACHE = r.items || [];
+    if (state.tab === 'works') render();
+  } catch (e) { /* ignore */ }
+}
+
+function bindWorks(){
+  const pick = $('#wPick'), file = $('#wFile'), drop = $('#wDrop');
+  if (pick && file){
+    pick.addEventListener('click', () => file.click());
+    file.addEventListener('change', () => {
+      const f = file.files[0];
+      if (f) uploadWork(f);
+    });
+  }
+  if (drop){
+    ['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+    ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+    drop.addEventListener('drop', e => {
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) uploadWork(f);
+    });
+  }
+}
+
+function uploadWork(file){
+  pendingWork = null;
+  $('#wSteps').hidden = false;
+  $('#wStepList').innerHTML = `<div class="step on"><span class="tick"></span><span>上传中 · ${file.name}</span></div>`;
+  $('#wProg').style.width = '8%';
+  fetch('/api/analyze', { method: 'POST', headers: { 'X-Filename': encodeURIComponent(file.name) }, body: file })
+    .then(r => r.json())
+    .then(r => {
+      if (!r.jobId) throw new Error(r.error || 'no job');
+      $('#wStepList').innerHTML = `<div class="step done"><span class="tick"></span><span>上传完成</span></div>
+        <div class="step on"><span class="tick"></span><span>切分镜头、抽首帧…</span></div>`;
+      $('#wProg').style.width = '40%';
+      pollJob(r.jobId, (res) => {
+        pendingWork = res;
+        render();
+      });
+    })
+    .catch(e => {
+      $('#wStepList').innerHTML = `<div class="step on" style="color:#E4572E">上传失败：${esc(e.message)}</div>`;
+    });
+}
+
+async function submitWork(){
+  if (!pendingWork) return;
+  const body = {
+    title: ($('#wTitle').value || '').trim() || '未命名作品',
+    cat: $('#wCat').value, level: $('#wLevel').value,
+    dur: $('#wDur') ? $('#wDur').value : (pendingWork.meta ? Math.round(pendingWork.meta.duration) + 's' : '15s'),
+    ratio: pendingWork.meta && pendingWork.meta.w > pendingWork.meta.h ? '16:9' : '9:16',
+    price: Number($('#wPrice').value) || 3800,
+    revisions: Number($('#wRev').value) || 2,
+    days: Number($('#wDays').value) || 5,
+    shots: pendingWork.shotCount,
+    cover: (pendingWork.shots.find(s => s.thumb) || {}).thumb || '',
+    video: pendingWork.videoUrl || '',
+    shotsDetail: (pendingWork.shots || []).map((s, i) => {
+      const el = document.getElementById('wn-' + i);
+      const pe = document.getElementById('wp-' + i);
+      return { n: s.n, s: s.start, e: s.end, img: s.thumb, d: el ? el.value.trim() : '', p: pe ? pe.value.trim() : '' };
+    })
+  };
+  try {
+    if (S.online && S.token){
+      await api('/api/cases', { method: 'POST', body: JSON.stringify(body) });
+      toast('已提交，商务审核后上架');
+      pendingWork = null;
+      await loadWorks();
+      render();
+    } else {
+      toast('未连后端：仅本地演示');
+      pendingWork = null; render();
+    }
+  } catch (e) { toast('提交失败：' + e.message); }
+}
+
+/* 把审核通过的真实作品并进案例库（前台可见） */
+function durToSec(d){
+  const s = String(d || '').trim();
+  const mm = s.match(/^(\d+):(\d+)$/);
+  if (mm) return Number(mm[1]) * 60 + Number(mm[2]);
+  let total = 0;
+  const mi = s.match(/(\d+)\s*min/i), se = s.match(/(\d+(?:\.\d+)?)\s*s/i);
+  if (mi) total += Number(mi[1]) * 60;
+  if (se) total += Number(se[1]);
+  return total || 15;
+}
+
+function mergeDbCases(items){
+  (items || []).forEach(w => {
+    if (CASES.some(c => c.id === w.id)) return;
+    let shots = (w.shots || []).map(s => ({
+      n: s.n, s: s.s, e: s.e, t: (typeof s.s === 'number' && typeof s.e === 'number' ? (s.e - s.s).toFixed(1) : '0') + 's',
+      size: '待标注', cam: '待标注', title: '镜头 ' + s.n,
+      desc: (s.d && String(s.d).trim()) ? s.d : '（创作者没有填写这一镜的说明）',
+      img: s.img || '', res: '1080p', ratio: w.ratio,
+      prompt: (s.p && String(s.p).trim()) ? s.p : '（创作者没有填写提示词）', neg: '（待补）'
+    }));
+    if (!shots.length){
+      const sec = durToSec(w.dur);
+      shots = [{
+        n: '01', s: 0, e: sec, t: sec.toFixed(1) + 's',
+        size: '待标注', cam: '待标注', title: '成片全片',
+        desc: '这条作品上传时没有带分镜数据，只录入了成片与报价，分镜表可以后续补录。',
+        img: w.cover || '', res: '1080p', ratio: w.ratio,
+        prompt: '（提示词待生成）', neg: '（待补）'
+      }];
+    }
+    CASES.unshift({
+      id: w.id, cat: w.cat, title: w.title,
+      client: (w.owner || '创作者') + ' · 作品',
+      dur: w.dur, ratio: w.ratio, shotsN: w.shotsN || shots.length,
+      year: (w.created || '').slice(0, 7).replace('-', '.'),
+      cover: w.cover || 'assets/film-poster.jpg', tag: w.tag || '',
+      videoSrc: w.videoSrc || '', price: w.price,
+      comments: [], shots
+    });
+  });
+}
+
+/* ============ 订单与收银台 ============ */
+let MY_ORDERS = [];
+let SETTLEMENTS = [];
+let CURRENT_ORDER = null;
+let CURRENT_SETTLEMENT = null;
+
+const ORDER_STEPS = [
+  { k: 'pending_pay', label: '待付款' },
+  { k: 'paid', label: '制作中' },
+  { k: 'delivered', label: '待验收' },
+  { k: 'accepted', label: '已完成' }
+];
+const EXTRA_STATUS = { closed: '已关闭（超时未付）', refunded: '已退款' };
+const statusLabel = (s) => EXTRA_STATUS[s] || (ORDER_STEPS.find(x => x.k === s) || { label: s }).label;
+const statusTone = (s) => s === 'accepted' ? 'C' : (s === 'pending_pay' ? 'A' : 'B');
+
+function stepBar(cur){
+  const idx = Math.max(0, ORDER_STEPS.findIndex(x => x.k === cur));
+  return `<div class="steps row" style="margin:14px 0">
+    ${ORDER_STEPS.map((s, i) => `<div class="step ${i < idx ? 'done' : (i === idx ? 'on' : '')}">
+      <span class="tick"></span><span>${s.label}</span></div>`).join('')}
+  </div>`;
+}
+
+function orderCard(o){
+  const actions = [];
+  if (o.status === 'pending_pay') actions.push(`<button class="copy" data-checkout="${o.id}">去支付</button>`);
+  if (state.role !== 'client' && o.status === 'paid') actions.push(`<button class="copy" data-deliverfile="${o.id}">上传成片交付</button>`);
+  if (o.status !== 'pending_pay') actions.push(`<button class="copy" data-checkout="${o.id}">打开</button>`);
+  if (o.status === 'paid' && state.role === 'client' && o.deliverFile === '') actions.push(`<button class="copy" data-refund="${o.id}">申请退款</button>`);
+  if (o.status === 'delivered' && state.role === 'client') actions.push(`<button class="copy" data-accept="${o.id}">确认验收</button>`);
+  const unread = o.unread ? `<span class="unread">${o.unread}</span>` : '';
+  return `<div class="rfq" style="cursor:default">
+    <div>
+      <h3>${esc(o.title)}<span class="tier ${statusTone(o.status)}">${statusLabel(o.status)}</span>${unread}</h3>
+      <div class="row">单号 <span style="font-family:var(--mono)">${o.no}</span><i>·</i>${o.creator}<i>·</i>${o.days} 个工作日</div>
+      <div class="row"><span class="b">客户实付 ${money(o.clientPay)}</span><i>·</i>报价 ${money(o.quote)}<i>·</i>创作者到手 ${money(o.creatorNet)}</div>
+      ${o.lastMsg && (o.lastMsg.body || o.lastMsg.file_name) ? `<div class="row" style="color:#7F8E87">最新消息：${esc((o.lastMsg.body || ('📎 ' + o.lastMsg.file_name)).slice(0, 40))}</div>` : ''}
+    </div>
+    <div class="side2">
+      ${actions.join('')}
+      <div style="margin-top:8px;font-size:11px;color:#7F8E87">平台服务费 ${money(o.platformFee)}</div>
+    </div>
+  </div>`;
+}
+
+function viewSettlements(){
+  if (!SETTLEMENTS.length) return '';
+  const rows = SETTLEMENTS.map(s => {
+    const tone = s.status === 'paid' ? 'var(--mint)' : (s.status === 'void' ? '#7F8E87' : '#C8A46A');
+    const label = s.status === 'paid' ? '已打款' : (s.status === 'void' ? '已作废' : '待打款');
+    return `<div class="kv" style="border-top:1px solid var(--line)">
+      <k>${s.orderId}<br><span style="color:#7F8E87;font-size:11px">${(s.created || '').slice(0, 10)}</span></k>
+      <v>${money(s.net)}<br><span style="font-size:11px;color:${tone}">${label}</span></v>
+    </div>`;
+  }).join('');
+  return `<div class="head" style="margin-top:26px"><h1 style="font-size:14px">结算单</h1>
+      <span class="right">平台抽 10% 后为到手金额</span></div>
+    <div class="pcard">${rows}</div>`;
+}
+
+function viewOrders(){
+  const list = MY_ORDERS.length ? MY_ORDERS.map(orderCard).join('')
+    : `<p class="empty">还没有订单。${
+        state.role === 'client' ? '去需求广场接受一个报价，或在案例里按规格询价。' : '去需求广场报价，客户接受后就会出现在这里。'}</p>`;
+  return `<div class="head"><h1>${state.role === 'client' ? '我的订单' : '接单记录'}</h1>
+      <span class="count">${MY_ORDERS.length} 单</span>
+      <span class="right">付款后进入制作，交付后由客户验收</span></div>
+    ${list}${state.role !== 'client' ? viewSettlements() : ''}`;
+}
+
+async function loadOrders(){
+  if (!S.online || !S.token) return;
+  try {
+    const r = await api('/api/orders?as=' + (state.role === 'client' ? 'client' : 'creator'));
+    MY_ORDERS = r.items || [];
+    if (state.role !== 'client'){
+      try { const s = await api('/api/settlements'); SETTLEMENTS = s.items || []; } catch (e) { SETTLEMENTS = []; }
+    }
+    if (state.tab === 'orders') render();
+  } catch (e) { /* ignore */ }
+}
+
+function viewCheckout(){
+  const o = CURRENT_ORDER;
+  if (!o) return '<p class="empty">订单不存在。</p>';
+  const st = CURRENT_SETTLEMENT;
+  const paid = o.status !== 'pending_pay';
+  return `<div class="head"><h1>收银台</h1><span class="count">${statusLabel(o.status)}</span>
+      <span class="right">支付后资金进入平台商户号，验收后结算给创作者</span></div>
+    ${stepBar(o.status)}
+    ${o.previewFile ? `<div class="deliverbox">
+      <div class="dh"><h3>成片预览</h3><span class="wm">带平台水印 · 仅供验收</span></div>
+      <video src="${o.previewFile}" controls playsinline style="width:100%;display:block;aspect-ratio:16/9;background:#000"></video>
+      <div class="df">
+        ${o.status === 'accepted'
+          ? `<a class="dl" href="/api/orders/${o.id}/download">下载无水印成片</a>
+             <span>已验收，母版可下载</span>`
+          : `<span class="lock">客户验收后开放无水印下载</span>
+             ${state.role === 'client' ? `<button class="copy" data-accept="${o.id}">确认验收</button>` : '<span>等待客户验收</span>'}`}
+      </div>
+    </div>` : ''}
+    ${(state.role !== 'client' && o.status === 'paid') ? `<div class="pcard" style="margin-bottom:16px">
+      <h3 style="margin-bottom:8px">交付成片</h3>
+      <div class="sub">上传成片后系统自动生成带水印的预览；客户验收前只给预览，验收后才能下载母版。</div>
+      <button class="solid" data-deliverfile="${o.id}" style="width:100%">上传成片并交付</button>
+      <input type="file" id="deliverFile" accept="video/*" hidden>
+    </div>` : ''}
+    <div class="cols2" style="grid-template-columns:1.15fr .85fr;gap:20px">
+      <div>
+        <div class="pcard">
+          <h3 style="margin-bottom:10px">${esc(o.title)}</h3>
+          <div class="kv" style="border-top:0"><k>单号</k><v style="font-family:var(--mono)">${o.no}</v></div>
+          <div class="kv"><k>创作者</k><v>${esc(o.creator)}</v></div>
+          <div class="kv"><k>工期</k><v>${o.days} 个工作日</v></div>
+          <div class="kv"><k>创作者报价</k><v>${money(o.quote)}</v></div>
+          <div class="kv"><k>平台服务费（客户 5%）</k><v>${money(o.clientFee)}</v></div>
+          <div class="kv"><k>应付总额</k><v style="color:var(--mint);font-size:15px">${money(o.clientPay)}</v></div>
+        </div>
+      </div>
+      <div>
+        <div class="pcard">
+          <h3 style="margin-bottom:10px">${paid ? '支付成功' : '扫码支付'}</h3>
+          ${paid
+            ? `<div class="gate" style="margin:0 0 12px">已于 ${(o.paidAt || '').slice(0, 16).replace('T', ' ')} 支付成功。创作者已收到开工通知。</div>
+               <button class="solid" data-tab="orders" style="width:100%">查看订单</button>`
+            : `<div style="display:grid;place-items:center;gap:10px;margin-bottom:12px">
+                 <div class="qrbox"><div class="qrgrid"></div></div>
+                 <div style="font-size:11px;color:#7F8E87;text-align:center">微信 / 支付宝扫码支付<br>（当前为模拟通道，不产生真实扣款）</div>
+               </div>
+               <button class="solid" data-pay="${o.id}" style="width:100%">模拟支付 ${money(o.clientPay)}</button>`}
+          ${st ? `<div class="neg" style="color:#9AA7A1;margin-top:14px">
+            创作者到手 ${money(st.net)}（扣平台 10% ${money(st.creatorFee)}）<br>
+            平台合计 ${money(st.platformFee)} · 结算状态 ${st.status === 'payable' ? '待打款' : '未生效'}</div>` : ''}
+        </div>
+      </div>
+    </div>
+    ${paid ? chatBlock() : ''}`;
+}
+
+async function createOrder(payload){
+  try {
+    const r = await api('/api/orders', { method: 'POST', body: JSON.stringify(payload) });
+    CURRENT_ORDER = r.order;
+    CURRENT_SETTLEMENT = { gross: r.order.quote, creatorFee: r.order.creatorFee, net: r.order.creatorNet,
+      clientFee: r.order.clientFee, platformFee: r.order.platformFee, status: 'pending' };
+    state.tab = 'checkout'; state.caseId = null; state.rfqId = null;
+    render(); $('.stage').scrollTop = 0;
+  } catch (e) { toast('下单失败：' + e.message); }
+}
+
+async function payOrder(id){
+  try {
+    const r = await api('/api/orders/' + id + '/pay', { method: 'POST' });
+    CURRENT_ORDER = r.order;
+    CHAT_ORDER = r.order.id;
+    render(); toast('支付成功（模拟）');
+    loadChat(CHAT_ORDER); startChatPoll(CHAT_ORDER);
+  } catch (e) { toast('支付失败：' + e.message); }
+}
+
+async function uploadDeliver(file){
+  const id = state._deliverOrder || (CURRENT_ORDER && CURRENT_ORDER.id);
+  if (!id) return toast('没有订单');
+  toast('正在上传并生成水印预览…');
+  try {
+    const bytes = await file.arrayBuffer();
+    const r = await fetch('/api/orders/' + id + '/deliver-file', {
+      method: 'POST',
+      headers: { 'X-Filename': encodeURIComponent(file.name), authorization: 'Bearer ' + S.token,
+        'content-type': 'application/octet-stream' },
+      body: bytes
+    }).then(x => x.json());
+    if (!r.ok) throw new Error(r.error || '上传失败');
+    CURRENT_ORDER = r.order;
+    render();
+    toast(r.watermark ? '已交付，水印预览已生成' : '已交付（水印生成失败，先按原片预览）');
+    loadOrders();
+  } catch (e) { toast('交付失败：' + e.message); }
+}
+
+async function isParticipantRead(){
+  if (!CHAT_ORDER || !S.online) return;
+  try { await api('/api/orders/' + CHAT_ORDER + '/read', { method: 'POST' }); } catch (e) {}
+  const o = MY_ORDERS.find(x => x.id === CHAT_ORDER);
+  if (o) o.unread = 0;
+}
+
+async function deliverOrder(id){
+  try { await api('/api/orders/' + id + '/deliver', { method: 'POST' }); toast('已标记交付'); loadOrders(); }
+  catch (e) { toast('操作失败：' + e.message); }
+}
+
+async function acceptOrder(id){
+  try { await api('/api/orders/' + id + '/accept', { method: 'POST' }); toast('已验收，结算单生效'); loadOrders(); }
+  catch (e) { toast('操作失败：' + e.message); }
+}
+
+async function refundOrder(id){
+  if (!confirm('确认申请退款？已付金额将原路退回，订单关闭。')) return;
+  try { await api('/api/orders/' + id + '/refund', { method: 'POST', body: JSON.stringify({ reason: '客户申请' }) });
+    toast('已退款'); loadOrders(); if (CURRENT_ORDER && CURRENT_ORDER.id === id) loadCheckout(id); }
+  catch (e) { toast('退款失败：' + e.message); }
+}
+
+async function shareOrder(id){
+  try { const r = await api('/api/orders/' + id + '/share', { method: 'POST' });
+    toast(r.already ? '已分账过' : ('已分账 ' + money(r.net))); loadOrders(); }
+  catch (e) { toast('分账失败：' + e.message); }
+}
+
+async function loadCheckout(id){
+  try {
+    const r = await api('/api/orders/' + id);
+    CURRENT_ORDER = r.order; CURRENT_SETTLEMENT = r.settlement;
+    CHAT_ORDER = r.order.id;
+    if (state.tab === 'checkout') render();
+    if (r.order.status !== 'pending_pay'){ isParticipantRead(); loadChat(CHAT_ORDER); startChatPoll(CHAT_ORDER); }
+  } catch (e) { toast('加载订单失败：' + e.message); }
+}
+
+/* ============ 订单聊天 ============ */
+let CHAT = [];
+let CHAT_ORDER = null;
+let chatTimer = null;
+
+function chatBlock(){
+  const cur = CURRENT_ORDER;
+  if (!cur || cur.status === 'pending_pay') return '';
+  const rows = CHAT.length ? CHAT.map(m => `
+    <div class="msg ${m.mine ? 'me' : ''}">
+      <div class="mb"><b>${esc(m.who)}</b><span>${m.role} · ${(m.time || '').slice(5, 16).replace('T', ' ')}</span></div>
+      ${m.text ? `<div class="mt">${esc(m.text)}</div>` : ''}
+      ${m.file ? (isImg(m.fileName)
+        ? `<a class="mf" href="${m.file}" target="_blank"><img src="${m.file}" alt="${esc(m.fileName)}"></a>`
+        : `<a class="mf link" href="${m.file}" target="_blank" download>📎 ${esc(m.fileName)}</a>`) : ''}
+    </div>`).join('') : '<div class="empty" style="padding:10px 0">还没有消息。把参考片、脚本、字体要求的文件直接拖进来。</div>';
+
+  return `<div class="chatcard">
+    <div class="chat-head"><h3>项目沟通</h3>
+      <span class="hint">付款后开放 · 双方可见 · 附件直接传</span></div>
+    <div class="chat-list" id="chatList">${rows}</div>
+    <div class="chat-in">
+      <button class="att" data-chatfile="1">附件</button>
+      <input type="file" id="chatFile" hidden>
+      <input id="chatText" placeholder="说点什么，比如：院子雨声那段能再近一点吗" autocomplete="off">
+      <button class="send" data-chatsend="1">发送</button>
+    </div>
+  </div>`;
+}
+
+const isImg = (n) => /\.(png|jpe?g|webp|gif)$/i.test(String(n || ''));
+
+async function loadChat(orderId, silent){
+  if (!S.online || !S.token) return;
+  try {
+    const r = await api('/api/orders/' + orderId + '/messages');
+    CHAT = r.items || [];
+    if (state.tab === 'checkout' && !silent) render();
+    else if (state.tab === 'checkout' && silent){
+      const box = document.getElementById('chatList');
+      if (box){ box.innerHTML = box.innerHTML; render(); }
+    }
+  } catch (e) { /* ignore */ }
+}
+
+function startChatPoll(orderId){
+  stopChatPoll();
+  chatTimer = setInterval(() => loadChat(orderId, true), 5000);
+}
+function stopChatPoll(){
+  if (chatTimer){ clearInterval(chatTimer); chatTimer = null; }
+}
+
+async function sendChat(){
+  const el = document.getElementById('chatText');
+  const text = (el && el.value || '').trim();
+  if (!text) return;
+  try {
+    await api('/api/orders/' + CHAT_ORDER + '/messages', { method: 'POST', body: JSON.stringify({ text }) });
+    CHAT.push({ who: S.user ? S.user.name : '我', role: '客户', text, mine: true, time: new Date().toISOString() });
+    render();
+  } catch (e) { toast('发送失败：' + e.message); }
+}
+
+async function uploadChat(file){
+  if (!CHAT_ORDER) return;
+  try {
+    const r = await fetch('/api/orders/' + CHAT_ORDER + '/upload', {
+      method: 'POST',
+      headers: { 'X-Filename': encodeURIComponent(file.name), authorization: 'Bearer ' + S.token },
+      body: file
+    }).then(x => x.json());
+    if (!r.ok) throw new Error(r.error || '上传失败');
+    CHAT.push({ who: S.user ? S.user.name : '我', role: '客户', file: r.url, fileName: r.name, mine: true, time: new Date().toISOString() });
+    render();
+    toast('已上传：' + r.name);
+  } catch (e) { toast('上传失败：' + e.message); }
+}
+
+/* ============ 保证金 ============ */
+let DEPOSITS = [];
+let DEP_BAL = { paid: 0, frozen: 0, refunded: 0 };
+let DEP_SUGGEST = 2000;
+
+async function loadDeposits(){
+  if (!S.online || !S.token) return;
+  try {
+    const r = await api('/api/deposits');
+    DEPOSITS = r.items || [];
+    DEP_BAL = r.balance || { paid: 0, frozen: 0, refunded: 0 };
+    DEP_SUGGEST = r.suggest || 2000;
+    if (state.tab === 'profile') render();
+  } catch (e) { /* ignore */ }
+}
+
+function depositCard(kindArg){
+  if (!S.token) return '';
+  const rows = DEPOSITS.map(d => {
+    const label = d.status === 'pending' ? '待缴纳' : (d.status === 'paid' ? '已缴纳' : (d.status === 'frozen' ? '争议冻结' : '已退回'));
+    const tone = d.status === 'paid' ? 'var(--mint)' : (d.status === 'frozen' ? '#E4572E' : (d.status === 'refunded' ? '#7F8E87' : '#C8A46A'));
+    return `<div class="kv" style="border-top:1px solid var(--line)">
+      <k>${d.no}<br><span style="color:#7F8E87;font-size:11px">${(d.created || '').slice(0, 16).replace('T', ' ')}</span></k>
+      <v>${money(d.amount)}<br><span style="font-size:11px;color:${tone}">${label}</span></v>
+    </div>`;
+  }).join('');
+
+  const base = kindArg === 'company' ? 5000 : 2000;
+  const short = Math.max(0, base - DEP_BAL.paid - DEP_BAL.frozen);
+  const action = short > 0
+    ? `<button class="solid" data-deppay="${short}" style="width:100%">缴纳保证金 ${money(short)}（在线支付）</button>`
+    : `<button class="ghost" data-deprefund="1" style="width:100%">申请退回保证金（原路退回）</button>`;
+
+  return `<div class="pcard" style="margin-bottom:16px">
+    <h3 style="margin-bottom:6px">履约保证金</h3>
+    <div class="sub" style="margin-bottom:10px">
+      已缴 <b style="color:var(--mint)">${money(DEP_BAL.paid)}</b>${DEP_BAL.frozen ? ` · 冻结 <b style="color:#E4572E">${money(DEP_BAL.frozen)}</b>` : ''}
+      ${DEP_BAL.refunded ? ` · 已退 ${money(DEP_BAL.refunded)}` : ''} · 建议额度 ${money(base)}
+      <br>个人接 C 级及以上订单必须先缴纳；企业可免（按单 8%）或缴纳。退回时走原路退回，有在途订单时不可退。
+    </div>
+    ${action}
+    ${DEPOSITS.length ? `<div style="margin-top:12px">${rows}</div>` : ''}
+  </div>`;
+}
+
+
+async function refundDeposit(){
+  const paid = DEPOSITS.filter(d => d.status === 'paid').pop();
+  if (!paid) return toast('没有可退的保证金');
+  if (!confirm('申请退回保证金 ' + money(paid.amount) + '？原路退回，到账时间以支付渠道为准。')) return;
+  try {
+    await api('/api/deposits/' + paid.id + '/refund', { method: 'POST' });
+    toast('已申请退回');
+    loadDeposits();
+  } catch (e) { toast('退回失败：' + e.message); }
+}
+
+
+/* ============ 保证金收银台 ============ */
+let CURRENT_DEPOSIT = null;
+
+function viewDepositPay(){
+  const d = CURRENT_DEPOSIT;
+  if (!d) return '<p class="empty">没有待支付的保证金单。</p>';
+  return `<div class="head"><h1>保证金收银台</h1><span class="count">${d.status === 'paid' ? '已缴纳' : '待支付'}</span>
+      <span class="right">原路退回 · 有在途订单时不可退</span></div>
+    <div class="cols2" style="grid-template-columns:1.1fr .9fr;gap:20px">
+      <div><div class="pcard">
+        <h3 style="margin-bottom:10px">履约保证金</h3>
+        <div class="kv" style="border-top:0"><k>保证金单号</k><v style="font-family:var(--mono)">${d.no}</v></div>
+        <div class="kv"><k>缴纳方</k><v>${esc(S.user ? S.user.name : '')}</v></div>
+        <div class="kv"><k>金额</k><v style="color:var(--mint);font-size:15px">${money(d.amount)}</v></div>
+        <div class="kv"><k>用途</k><v>接 C 级及以上订单的履约担保</v></div>
+        <div class="neg" style="color:#9AA7A1;margin-top:12px">这笔钱不是平台收入：结清所有订单后可申请原路退回；
+          发生争议时由商务冻结，按双方合同结论处理。</div>
+      </div></div>
+      <div><div class="pcard">
+        <h3 style="margin-bottom:10px">${d.status === 'paid' ? '已缴纳' : '扫码支付'}</h3>
+        ${d.status === 'paid'
+          ? `<div class="gate" style="margin:0 0 12px">已于 ${(d.paidAt || '').slice(0, 16).replace('T', ' ')} 缴纳成功。</div>
+             <button class="solid" data-tab="profile" style="width:100%">返回入驻资料</button>`
+          : `<div style="display:grid;place-items:center;gap:10px;margin-bottom:12px">
+               <div class="qrbox"><div class="qrgrid"></div></div>
+               <div style="font-size:11px;color:#7F8E87;text-align:center">微信 / 支付宝扫码缴纳<br>（当前为模拟通道）</div>
+             </div>
+             <button class="solid" data-deppaynow="${d.id}" style="width:100%">模拟缴纳 ${money(d.amount)}</button>`}
+      </div></div>
+    </div>`;
+}
+
+async function payDeposit(amount){
+  try {
+    const r = await api('/api/deposits', { method: 'POST', body: JSON.stringify({ amount: Number(amount) }) });
+    CURRENT_DEPOSIT = r.deposit;
+    state.tab = 'depositpay';
+    render(); $('.stage').scrollTop = 0;
+  } catch (e) { toast('下单失败：' + e.message); }
+}
+
+async function payDepositNow(id){
+  try {
+    const r = await api('/api/deposits/' + id + '/pay', { method: 'POST' });
+    CURRENT_DEPOSIT = r.deposit;
+    toast('保证金已缴纳');
+    render();
+    loadDeposits();
+  } catch (e) { toast('缴纳失败：' + e.message); }
+}
+
+/* ============ 视图：入驻资料 ============ */
+let MY_PROFILE = null;
+let MY_PROFILE_LOADED = false;
+
+function viewProfile(){
+  const u = S.user || { kind: 'company', name: '未登录' };
+  const kind = ((state.role === 'client' ? state.clientKind === 'person' : state.role === 'solo') ? 'solo' : 'company');
+  const company = kind === 'company';
+  const p = MY_PROFILE;
+  const st = !p ? ['未提交', 'A'] : (p.status === 'passed' ? ['已通过', 'C'] : (p.status === 'rejected' ? ['已驳回', 'A'] : ['待审核', 'B']));
+
+  const statusCard = `<div class="pcard" style="margin-bottom:16px">
+    <h3 style="margin-bottom:6px">当前状态
+      <span class="tier ${st[1]}">${st[0]}</span></h3>
+    <div class="sub" style="margin-bottom:0">
+      ${p
+        ? `提交于 ${(p.created || '').slice(0, 16).replace('T', ' ')}${p.reviewer ? ' · 审核人 ' + p.reviewer : ''}
+           ${p.note ? '<br>审核意见：' + esc(p.note) : ''}`
+        : (state.role === 'client' ? '还没有提交认证。' : '还没有提交过入驻资料。') + (company ? '企业发布需求或接单前，必须补齐资质。' : '个人发布需求或接单前，必须完成实名。')}
+    </div>
+    ${!p || p.status === 'rejected' ? '<div class="gate" style="margin-top:10px">发布需求、接单、上架作品都会被这个状态拦住。</div>' : ''}
+  </div>`;
+
+  const form = `<div class="pcard">
+    <h3 style="margin-bottom:10px">${p ? '修改并重新提交' : (state.role === 'client' ? '填写认证信息' : '填写入驻资料')}</h3>
+    <div class="sub" style="margin:0 0 12px">当前身份：<b>${company ? '企业 / 工作室' : '个人创作者'}</b> · 可在顶部切换</div>
+    <div class="sub" style="margin:-6px 0 14px">${company
+      ? (state.role === 'client' ? '企业认证需要营业执照、对公账户与开票资质；认证通过后才能发布需求。' : '企业资质齐全后可发需求、接单、上架作品；可开票是接企业客户单的前提。')
+      : (state.role === 'client' ? '个人实名认证需要真实姓名、身份证与收款账户；认证通过后才能发布需求。' : '个人完成实名后即可接 C 级及以下订单、上架作品；完成订单后逐级解锁更高等级。')}</div>
+    ${company ? `
+      <div class="field"><label>公司 / 工作室名称</label><input id="pName" value="${esc(p ? p.name : u.name)}"></div>
+      <div class="row2">
+        <div class="field"><label>营业执照号</label><input id="pLicense" value="${esc(p ? p.licenseNo : '')}" placeholder="统一社会信用代码"></div>
+        <div class="field"><label>对公账户</label><input id="pBank" value="${esc(p ? p.bank : '')}" placeholder="开户行 + 账号"></div>
+      </div>
+      <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:#93A29B;margin-bottom:12px">
+        <input type="checkbox" id="pInvoice" ${p && p.invoiceReady ? 'checked' : ''}> 具备开票资质（增值税专票）
+      </label>`
+    : `
+      <div class="field"><label>真实姓名</label><input id="pName" value="${esc(p ? p.name : u.name)}"></div>
+      <div class="row2">
+        <div class="field"><label>身份证后四位</label><input id="pLicense" maxlength="4" placeholder="用于实名核验" value="${esc(p && p.licenseNo ? p.licenseNo : '')}"></div>
+        <div class="field"><label>收款银行卡</label><input id="pBank" value="${esc(p ? p.bank : '')}" placeholder="开户行 + 卡号"></div>
+      </div>
+      <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:#93A29B;margin-bottom:12px">
+        <input type="checkbox" id="pRealname" ${p && p.realname ? 'checked' : ''}> 我已同意实名认证（上传身份证 + 人脸核验，此处演示勾选）
+      </label>`}
+    <div class="field"><label>履约保证金（元，走在线支付）</label>
+      <input id="pDeposit" type="number" value="${p ? p.deposit : (company ? 5000 : 2000)}"></div>
+    <button class="solid" data-psubmit="1" style="width:100%;text-align:center">提交商务审核</button>
+    <div style="font-size:11px;color:#7F8E87;margin-top:10px;line-height:1.7">
+      审核按提交顺序处理。企业需要：营业执照、对公账户、开票资质；个人需要：实名认证 + 收款账户。
+    </div>
+  </div>`;
+
+  return `<div class="head"><h1>${state.role === 'client' ? (company ? '企业认证' : '实名认证') : '入驻资料'}</h1><span class="count">${company ? '企业' : '个人'}</span>
+      <span class="right">审核通过后，才能发需求、接单、上架作品</span></div>
+    ${statusCard}${depositCard(kind)}${form}`;
+}
+
+async function loadProfile(){
+  if (!S.online || !S.token) return;
+  try {
+    const r = await api('/api/my/profile');
+    MY_PROFILE = r.profile || null;
+    MY_PROFILE_LOADED = true;
+    if (state.tab === 'profile') render();
+  } catch (e) { /* ignore */ }
+}
+
+async function submitProfile(){
+  if (!S.online || !S.token) return toast('请先登录');
+  const kind = ((state.role === 'client' ? state.clientKind === 'person' : state.role === 'solo') ? 'solo' : 'company');
+  const company = kind === 'company';
+  const name = ($('#pName').value || '').trim();
+  const license = ($('#pLicense').value || '').trim();
+  const bank = ($('#pBank').value || '').trim();
+  const deposit = Number($('#pDeposit').value) || 0;
+  if (!name) return toast('名称不能为空');
+  if (!license) return toast(company ? '营业执照号必填' : '身份证后四位必填');
+  if (!bank) return toast(company ? '对公账户必填' : '收款银行卡必填');
+  const body = {
+    kind, name, licenseNo: license, bank, deposit,
+    invoiceReady: company ? !!($('#pInvoice') && $('#pInvoice').checked) : false,
+    realname: company ? true : !!($('#pRealname') && $('#pRealname').checked)
+  };
+  try {
+    const r = await api('/api/profiles', { method: 'POST', body: JSON.stringify(body) });
+    MY_PROFILE = r.profile;
+    if (S.user) S.user.kind = kind;
+    render();
+    toast('已提交，等待商务审核');
+  } catch (e) { toast('提交失败：' + e.message); }
+}
+
+/* ============ 渲染 ============ */
+function render(){
+  renderChrome();
+  let html = '';
+  if (state.tab === 'cases') html = state.caseId ? viewCase() : viewCases();
+  else if (state.tab === 'upload') html = viewUpload();
+  else if (state.tab === 'works') html = viewWorks();
+  else if (state.tab === 'profile') html = viewProfile();
+  else if (state.tab === 'orders') html = viewOrders();
+  else if (state.tab === 'checkout') html = viewCheckout();
+  else if (state.tab === 'depositpay') html = viewDepositPay();
+  else if (state.tab === 'entry') html = viewEntry();
+  else if (state.tab === 'rfq') html = state.rfqId ? viewRfq() : viewRfqs();
+  else html = viewMine();
+  view.innerHTML = html;
+  if (state.tab === 'upload') bindUpload();
+  if (state.tab === 'works') bindWorks();
+  if (state.tab === 'checkout'){
+    const df = document.getElementById('deliverFile');
+    if (df && !df._bound01){ df._bound01 = true; df.addEventListener('change', () => { if (df.files[0]) uploadDeliver(df.files[0]); }); }
+  }
+
+  if (state.tab === 'cases' && state.caseId){ const c = currentCase(); if (c && (c.auto || c.videoSrc)) bindFilm(c); }
+}
+
+/* ============ 弹层 ============ */
+function openModal(html, wide){ const m = $('#modal'); m.className = 'modal' + (wide ? ' wide' : ''); m.innerHTML = html; $('#mask').hidden = false; }
+function closeModal(){ $('#mask').hidden = true; $('#modal').innerHTML = ''; }
+
+function postModal(){
+  openModal(`
+    <h2>发布需求</h2>
+    <div class="sub">${state.clientKind === 'biz'
+      ? '企业客户 · 预付款 30%，验收后付 70%'
+      : `个人客户 · 预付款 100% 托管 · 本月额度还剩 ${quotaInfo().limit - quotaInfo().used} 单（${quotaInfo().level} ${quotaInfo().used}/${quotaInfo().limit}）`}</div>
+    <div class="field"><label>项目名称</label><input id="pTitle2" placeholder="例如：老照片转 15 秒纪念片"></div>
+    <div class="row2">
+      <div class="field"><label>类型</label>
+        <select id="pCat">
+          <option>AI 二创</option><option>产品宣传片</option><option>企业宣传片</option>
+          <option>AI 婚礼记录</option><option>小说漫剧</option><option>品牌短片</option>
+        </select></div>
+      <div class="field"><label>片长</label>
+        <select id="pDur"><option>15s</option><option>30s</option><option>45s</option><option>1min</option><option>3min</option><option>5min</option></select></div>
+    </div>
+    <div class="field"><label>预算（元）</label><input id="pBudget" type="number" value="800">
+      <div style="font-size:11px;color:#7F8E87;margin-top:5px">≤1,000 为 D 级微单 · 1,000–5,000 为 C 级 · 5,000–20,000 为 B 级 · 20,000 以上为 A 级</div></div>
+    <div class="field"><label>要求</label><textarea id="pDesc" placeholder="素材在哪、要多长、给谁看">12 张老照片做成 15 秒纪念片，配轻音乐，不要字幕。</textarea></div>
+    <label style="display:flex;gap:7px;align-items:flex-start;font-size:11.5px;color:#93A29B;line-height:1.6">
+      <input type="checkbox" id="pLic" checked style="margin-top:2px"> 我确认素材由我提供并有权使用；二创类订单如涉第三人版权，由我承担（平台仅对交付质量负责）</label>
+    <div style="font-size:11px;color:#7F8E87;line-height:1.7;margin-top:2px">平台双向收取：客户 5% 服务费（含在实付里）+ 创作者 10%（结算时扣）。你填的预算按创作者口径写，发布后客户看到的是含服务费总价。</div>
+    <div class="actions"><button class="ghost" data-close>取消</button><button class="solid" data-submit-post="1">发布需求</button></div>`);
+}
+
+async function submitPost(){
+  const qi = quotaInfo();
+  if (state.clientKind === 'person' && qi.limit - qi.used <= 0){
+    closeModal();
+    openModal(`<h2>本月发布额度已用完</h2>
+      <div class="sub">${qi.level} 个人客户每月可发 ${qi.limit} 单，已用 ${qi.used} 单。</div>
+      <div class="desc">额度按履约结果提升：完成 2 单且无争议 → 5 单/月；完成 5 单且评分 ≥ 4.5 → 10 单/月。</div>
+      <div class="actions"><button class="solid" data-close>知道了</button></div>`);
+    return;
+  }
+  const title = ($('#pTitle2').value || '').trim() || '新需求';
+  const cat = $('#pCat').value;
+  const budget = Number($('#pBudget').value) || 800;
+  const payload = {
+    title, cat, dur: $('#pDur').value, ratio: '9:16', level: '标准',
+    budget: [Math.round(budget * 0.9), Math.round(budget * 1.1)],
+    desc: ($('#pDesc').value || '').trim() || '按需求说明执行。'
+  };
+
+  if (S.online){
+    try {
+      const r = await api('/api/rfqs', { method: 'POST', body: JSON.stringify(payload) });
+      if (r.rfq) RFQS.unshift(r.rfq);
+      if (r.quota) S.quota = r.quota;
+    } catch (e) {
+      if (String(e.message).includes('入驻资料')){
+        closeModal();
+        state.tab = 'profile'; state.caseId = null; render(); loadProfile();
+        toast(state.role === 'client' ? '发布需求前需要先完成认证' : '先补入驻资料：' + e.message);
+      } else {
+        toast('发布失败：' + e.message);
+      }
+      return;
+    }
+  } else {
+    RFQS.unshift({ id: 'q' + Date.now(), client: clientName(), ...payload,
+      deadline: '5 天后截止', refCase: null, lic: cat === 'AI 二创', bids: [] });
+    if (state.clientKind === 'person') CLIENT_QUOTA.used++;
+  }
+
+  closeModal(); state.tab = 'mine'; state.caseId = null;
+  render();
+  const q2 = quotaInfo();
+  toast(state.clientKind === 'person' ? `需求已发布 · 本月还剩 ${Math.max(0, q2.limit - q2.used)} 单额度` : '需求已发布，制作方可以报价了');
+}
+
+function inquiryModal(caseId){
+  const c = caseById(caseId);
+  openModal(`
+    <h2>按这个规格询价</h2>
+    <div class="sub">已经带上「${esc(c.title)}」的分镜表与报价（${money(c.price.from)} 起 / ${c.price.days} 个工作日 / 含 ${c.price.revisions} 次修改）。补三件事就能发出去。</div>
+    <div class="field"><label>项目名称</label><input id="fTitle" value="参考「${esc(c.title)}」做一条"></div>
+    <div class="row2">
+      <div class="field"><label>预算区间（元）</label>
+        <select id="fBudget">
+          <option>${money(c.price.from)} – ${money(Math.round(c.price.from * 1.4))}</option>
+          <option>${money(Math.round(c.price.from * 1.4))} – ${money(c.price.from * 2)}</option>
+          <option>再高一些也行，先看方案</option>
+        </select></div>
+      <div class="field"><label>期望交付</label>
+        <select id="fDays"><option>${c.price.days} 个工作日</option><option>一周内</option><option>两周内，可以等</option></select></div>
+    </div>
+    <div class="field"><label>具体要求</label><textarea id="fDesc" placeholder="比如：换成我们的产品、只做仪式那段、需要 4K">改成我们自己的产品，保留暗场逆光和单点高光，单价控制在预算内。</textarea></div>
+    <div class="actions"><button class="ghost" data-close>取消</button><button class="solid" data-submit-inquiry="${c.id}">发布到需求广场</button></div>`);
+}
+
+function bidModal(rfqId){
+  const q = rfqById(rfqId);
+  openModal(`
+    <h2>提交报价</h2>
+    <div class="sub">${esc(q.title)} · 预算 ${money(q.budget[0])}–${money(q.budget[1])} · ${q.deadline}</div>
+    <div class="row2">
+      <div class="field"><label>你的报价（元）</label><input id="bPrice" type="number" value="${Math.round(q.budget[0] * 1.1)}"></div>
+      <div class="field"><label>工期（工作日）</label><input id="bDays" type="number" value="5"></div>
+    </div>
+    <div class="field"><label>附言（客户先看这段）</label><textarea id="bNote" placeholder="说清包含什么、不含什么">含 4 次首帧确认、2 次修改；实拍素材调色统一，不含配音。</textarea></div>
+    <div class="actions"><button class="ghost" data-close>取消</button><button class="solid" data-submit-bid="${q.id}">提交报价</button></div>`);
+}
+
+/* ============ 事件 ============ */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab],[data-case],[data-back],[data-shot],[data-inquiry],[data-cmt],[data-bid],[data-close],[data-submit-inquiry],[data-submit-bid],[data-submit-post],[data-rfq],[data-provider],[data-clientkind],[data-profile],[data-wsubmit],[data-psubmit],[data-pkind],[data-orderbid],[data-checkout],[data-pay],[data-deliver],[data-deliverfile],[data-accept],[data-refund],[data-share],[data-deppay],[data-deppaynow],[data-deprefund],[data-chatsend],[data-chatfile]');
+  if (!t) return;
+
+  if (t.dataset.profile){ openProfile(t.dataset.profile); return; }
+
+  if (t.dataset.clientkind !== undefined){ state.clientKind = t.dataset.clientkind; state.tab = 'cases'; state.caseId = null; state.rfqId = null; render(); return; }
+  if (t.dataset.provider !== undefined){ state.provider = t.dataset.provider; render(); return; }
+
+  if (t.dataset.tab){
+    state.tab = t.dataset.tab; state.caseId = null; state.rfqId = null;
+    render(); $('.stage').scrollTop = 0;
+    if (state.tab === 'works') loadWorks();
+    if (state.tab === 'profile'){ loadProfile(); loadDeposits(); }
+    if (state.tab === 'orders') loadOrders();
+    if (state.tab === 'checkout' && CURRENT_ORDER){
+      CHAT_ORDER = CURRENT_ORDER.id;
+      if (CURRENT_ORDER.status !== 'pending_pay'){ loadChat(CHAT_ORDER); startChatPoll(CHAT_ORDER); }
+      else stopChatPoll();
+    }
+    return;
+  }
+  if (t.dataset.rfq){ state.tab = 'rfq'; state.rfqId = t.dataset.rfq; render(); $('.stage').scrollTop = 0; loadRfq(t.dataset.rfq); return; }
+  if (t.dataset.case){ state.tab = 'cases'; state.caseId = t.dataset.case; state.shot = 0; render(); $('.stage').scrollTop = 0; loadComments(t.dataset.case); return; }
+  if (t.dataset.back !== undefined){ state.caseId = null; state.rfqId = null; render(); $('.stage').scrollTop = 0; return; }
+  if (t.dataset.shot){
+    state.shot = Number(t.dataset.shot);
+    paintShot();
+    const c = currentCase();
+    if (c && c.auto){
+      const v = document.getElementById('film'), s = c.shots[state.shot];
+      if (v && s && s.s !== undefined){ v.currentTime = s.s + 0.05; v.play().catch(() => {}); }
+    }
+    return;
+  }
+  if (t.dataset.inquiry){ inquiryModal(t.dataset.inquiry); return; }
+  if (t.dataset.bid){ bidModal(t.dataset.bid); return; }
+  if (t.dataset.close !== undefined){ closeModal(); return; }
+  if (t.dataset.cmt){ addComment(t.dataset.cmt); return; }
+  if (t.dataset.submitInquiry){ submitInquiry(t.dataset.submitInquiry); return; }
+  if (t.dataset.submitBid){ submitBid(t.dataset.submitBid); return; }
+  if (t.dataset.submitPost){ submitPost(); return; }
+  if (t.dataset.wsubmit){ submitWork(); return; }
+  if (t.dataset.orderbid){
+    const [creator, price, days, title] = t.dataset.orderbid.split('|');
+    createOrder({ creator, quote: Number(price), days: Number(days), title });
+    return;
+  }
+  if (t.dataset.checkout){ state.tab = 'checkout'; render(); loadCheckout(t.dataset.checkout); return; }
+  if (t.dataset.pay){ payOrder(t.dataset.pay); return; }
+  if (t.dataset.chatsend){ sendChat(); return; }
+  if (t.dataset.chatfile){ const f = document.getElementById('chatFile'); if (f) f.click(); return; }
+  if (t.dataset.deliverfile){
+    state._deliverOrder = t.dataset.deliverfile;
+    const inp = document.getElementById('deliverFile');
+    if (inp){ inp.click(); } else { toast('请先回到收银台页面'); }
+    return;
+  }
+  if (t.dataset.deliver){ deliverOrder(t.dataset.deliver); return; }
+  if (t.dataset.accept){ acceptOrder(t.dataset.accept); return; }
+  if (t.dataset.refund){ refundOrder(t.dataset.refund); return; }
+  if (t.dataset.deppay){ payDeposit(t.dataset.deppay); return; }
+  if (t.dataset.deppaynow){ payDepositNow(t.dataset.deppaynow); return; }
+  if (t.dataset.deprefund){ refundDeposit(); return; }
+  if (t.dataset.share){ shareOrder(t.dataset.share); return; }
+  if (t.dataset.psubmit){ submitProfile(); return; }
+  if (t.dataset.pkind !== undefined){ state.profileKind = t.dataset.pkind; if (S.user) S.user.kind = t.dataset.pkind; render(); return; }
+});
+
+document.addEventListener('click', e => {
+  if (e.target.id === 'copy'){
+    const txt = $('#pPrompt').textContent;
+    const done = () => toast('提示词已复制');
+    if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done).catch(done); else done();
+  }
+});
+
+$('#role').addEventListener('click', e => {
+  const b = e.target.closest('button[data-role]'); if (!b) return;
+  state.role = b.dataset.role;
+  state.provider = state.role === 'solo' ? 'solo' : 'company';
+  if (S.user) S.user.kind = state.role === 'solo' ? 'solo' : 'company';
+  state.tab = 'cases'; state.caseId = null; state.rfqId = null;
+  render();
+});
+
+$('#primary').addEventListener('click', () => {
+  if (state.role === 'client'){ postModal(); return; }
+  // 制作公司 / 个人创作者：直接进「入驻资料」页
+  state.tab = 'profile'; state.caseId = null; state.rfqId = null;
+  render();
+  $('.stage').scrollTop = 0;
+  loadProfile();
+});
+
+$('#mask').addEventListener('click', e => { if (e.target.id === 'mask') closeModal(); });
+
+async function addComment(caseId){
+  const el = $('#cmtText');
+  const text = (el && el.value || '').trim();
+  if (!text){ toast('先写点什么'); return; }
+  const c = caseById(caseId);
+  if (S.online){
+    try {
+      const r = await api('/api/cases/' + caseId + '/comments', { method: 'POST', body: JSON.stringify({ text }) });
+      if (r.comment) c.comments.push(r.comment);
+    } catch (e) { toast('留言失败：' + e.message); return; }
+  } else {
+    c.comments.push({ who: state.role === 'client' ? clientName() : ME_STUDIO,
+      role: state.role === 'client' ? '客户' : '制作方', time: '刚刚', text });
+  }
+  paintShot(); render(); toast('留言已发布');
+}
+
+function submitInquiry(caseId){
+  const c = caseById(caseId);
+  const title = $('#fTitle').value.trim() || '参考案例的新需求';
+  const budgetSel = $('#fBudget').value;
+  const budget = [Math.round(c.price.from * 1.1), Math.round(c.price.from * 1.6)];
+  RFQS.unshift({
+    id: 'q' + Date.now(), title, client: clientName(), cat: c.cat, dur: c.dur, ratio: c.ratio,
+    level: c.price.level, budget, deadline: '5 天后截止',
+    desc: $('#fDesc').value.trim() || '按参考案例的规格做一条同类短片。',
+    refCase: c.id, bids: []
+  });
+  closeModal(); state.tab = 'mine'; state.caseId = null; render(); toast('需求已发布，制作公司可以报价了');
+}
+
+async function submitBid(rfqId){
+  const q = rfqById(rfqId);
+  const price = Number($('#bPrice').value) || q.budget[0];
+  const days = Number($('#bDays').value) || 5;
+  const note = $('#bNote').value.trim() || '按需求说明执行。';
+
+  if (S.online){
+    try {
+      const r = await api('/api/rfqs/' + rfqId + '/bids', {
+        method: 'POST', body: JSON.stringify({ price, days, note })
+      });
+      if (r.bid) q.bids.push({ studio: r.bid.studio, price: r.bid.price, days: r.bid.days, note: r.bid.note, time: '刚刚' });
+    } catch (e) {
+      toast('报价失败：' + e.message);
+      return;
+    }
+  } else {
+    q.bids.push({ studio: ME_STUDIO, price, days, note, time: '刚刚' });
+  }
+
+  closeModal(); state.tab = 'rfq'; render(); toast('报价已提交');
+}
+
+/* ============ 登录 ============ */
+function showLogin(){ $('#loginMask').hidden = false; }
+
+$('#sendcode').addEventListener('click', async () => {
+  const phone = ($('#phone').value || '').trim();
+  if (!/^1\d{10}$/.test(phone)) return toast('手机号格式不对');
+  try {
+    const j = await api('/api/auth/code', { method: 'POST', body: JSON.stringify({ phone }) });
+    if (j.devCode){
+      $('#code').value = j.devCode;
+      const h = $('#codehint');
+      h.hidden = false;
+      h.textContent = '开发模式：验证码已自动填入（上线后改为短信发送）';
+    } else {
+      toast('验证码已发送');
+    }
+  } catch (e) { toast('发送失败：' + e.message); }
+});
+
+$('#dologin').addEventListener('click', async () => {
+  const phone = ($('#phone').value || '').trim();
+  const code = ($('#code').value || '').trim();
+  const kind = $('#kind').value;
+  if (!/^1\d{10}$/.test(phone)) return toast('手机号格式不对');
+  if (!/^\d{6}$/.test(code)) return toast('验证码是 6 位数字');
+  try {
+    const j = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ phone, code, kind }) });
+    S.token = j.token; S.user = j.user; S.quota = j.quota;
+    localStorage.setItem(TOKEN_KEY, j.token);
+    $('#loginMask').hidden = true;
+    render();
+    const op = new URLSearchParams(location.search).get('order');
+    if (op){ state.tab = 'checkout'; render(); loadCheckout(op); }
+    toast('已登录：' + j.user.name);
+  } catch (e) { toast('登录失败：' + e.message); }
+});
+
+$('#skipLogin').addEventListener('click', () => { $('#loginMask').hidden = true; });
+
+/* 点右上角账号 → 退出登录 */
+$('#whoami').addEventListener('click', () => {
+  if (!S.user) return;
+  if (!confirm('退出当前账号？')) return;
+  localStorage.removeItem(TOKEN_KEY);
+  S.token = null; S.user = null; S.quota = null;
+  MY_PROFILE = null; MY_PROFILE_LOADED = false; WORK_CACHE = [];
+  state.tab = 'cases'; state.caseId = null;
+  render();
+  showLogin();
+});
+
+/* ============ 启动 ============ */
+async function boot(){
+  const forceLogin = new URLSearchParams(location.search).get('login') === '1';
+  try { await api('/api/health'); S.online = true; } catch (e) { S.online = false; }
+
+  if (S.online){
+    // 公开数据先拉，与是否登录无关
+    try {
+      const list = await api('/api/rfqs');
+      (list.items || []).forEach(it => { if (!RFQS.some(x => x.id === it.id)) RFQS.unshift(it); });
+    } catch (e) { /* 拉不到就退回演示数据 */ }
+    try {
+      const cs = await api('/api/cases');
+      mergeDbCases(cs.items || []);
+    } catch (e) { /* ignore */ }
+
+    const t = forceLogin ? null : localStorage.getItem(TOKEN_KEY);
+    if (t){
+      S.token = t;
+      try {
+        const me = await api('/api/me');
+        S.user = me.user; S.quota = me.quota;
+      } catch (e) { S.token = null; localStorage.removeItem(TOKEN_KEY); }
+    }
+    if (!S.token) showLogin();
+  } else {
+    showLogin();
+  }
+  if (forceLogin) showLogin();
+
+  render();
+  const deep = location.hash.match(/^#case=([\w-]+)/);
+  if (deep && caseById(deep[1])){
+    state.tab = 'cases'; state.caseId = deep[1]; render(); loadComments(deep[1]);
+  }
+  if (location.hash.startsWith('#demo-upload')){
+    state.role = 'studio'; state.tab = 'upload'; render();
+  }
+}
+
+boot();
+</script>
+</body>
+</html>

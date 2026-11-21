@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>商务审核台 · 第七场</title>
+<style>
+  :root{
+    --bg:#080C0B; --panel:#0E1513; --panel2:#121B18; --panel3:#0A100E;
+    --line:rgba(230,237,233,.10); --line2:rgba(230,237,233,.18);
+    --ink:#E6EDE9; --dim:#93A29B; --dimmer:#7F8E87;
+    --mint:#6FE3A8; --sand:#C8A46A; --red:#E4572E;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+    --sans:"Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:13px;line-height:1.6}
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  header{border-bottom:1px solid var(--line);background:var(--panel)}
+  .bar{height:56px;display:flex;align-items:center;gap:12px}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+  .logo i{width:9px;height:9px;border-radius:50%;background:var(--sand);box-shadow:0 0 12px rgba(200,164,106,.6)}
+  .logo span{color:#9BA9A2;font-weight:500;font-size:12px}
+  .bar .r{margin-left:auto;display:flex;gap:14px;align-items:center;font-size:12px;color:var(--dim)}
+  .badge{font-size:11px;color:var(--sand);border:1px solid rgba(200,164,106,.45);border-radius:2px;padding:2px 7px}
+
+  .pad{padding:26px 0 60px}
+  h1{margin:0 0 4px;font-size:26px;font-weight:800}
+  .lede{margin:0 0 20px;font-size:12.5px;color:var(--dim)}
+
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .tab{padding:9px 16px;font-size:12.5px;color:var(--dim);border-bottom:2px solid transparent}
+  .tab[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--mint);font-weight:600}
+  .tab b{font-family:var(--mono);font-size:11px;color:var(--dimmer);margin-left:6px}
+
+  h2.sec{margin:22px 0 10px;font-size:13px;letter-spacing:.12em;color:var(--dimmer);font-weight:600}
+  .empty{font-size:12.5px;color:var(--dimmer);padding:14px 0}
+
+  .media{display:flex;gap:14px;margin:10px 0;align-items:flex-start}
+  .media video{width:340px;max-width:48%;border-radius:4px;border:1px solid var(--line2);background:#000}
+  .media img{width:340px;max-width:48%;border-radius:4px;border:1px solid var(--line2)}
+  .media .side{flex:1;min-width:0}
+  .media .cover{width:120px;border-radius:3px;border:1px solid var(--line);margin-bottom:8px}
+  .novideo{width:200px;height:112px;display:grid;place-items:center;border:1px dashed var(--line2);
+    border-radius:4px;color:#7F8E87;font-size:11px}
+  .shots{display:flex;gap:6px;overflow-x:auto;padding:6px 0 2px}
+  .shots figure{margin:0;width:86px;flex:0 0 86px}
+  .shots img{width:86px;height:48px;object-fit:cover;border-radius:3px;border:1px solid var(--line)}
+  .shots figcaption{font-size:11px;color:#7F8E87;text-align:center;font-family:var(--mono)}  .item{border:1px solid var(--line);border-radius:5px;background:var(--panel);padding:14px 16px;margin-bottom:10px}
+  .item h3{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:8px}
+  .chip{font-family:var(--mono);font-size:11px;border:1px solid var(--line2);border-radius:2px;padding:1px 6px;color:var(--dim)}
+  .chip.co{color:var(--mint);border-color:rgba(111,227,168,.45)}
+  .chip.solo{color:var(--sand);border-color:rgba(200,164,106,.45)}
+  .meta{font-size:11.5px;color:var(--dimmer);margin-bottom:8px}
+  .facts{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:11.5px;color:var(--dim)}
+  .facts b{color:var(--ink);font-weight:600}
+  .acts{display:flex;gap:8px;margin-top:12px;align-items:center}
+  .ok{font-size:12px;padding:7px 16px;border-radius:3px;background:var(--mint);color:#04120C;font-weight:700}
+  .no{font-size:12px;padding:7px 16px;border-radius:3px;border:1px solid rgba(228,87,46,.5);color:var(--red)}
+  .note{flex:1;min-width:180px;background:var(--panel3);border:1px solid var(--line);border-radius:3px;
+        padding:7px 10px;color:var(--ink);font-size:12px;outline:0}
+  .note:focus{border-color:rgba(111,227,168,.45)}
+  .st{font-size:11px;color:var(--dim);margin-left:auto}
+  .st.pass{color:var(--mint)}
+  .st.rej{color:var(--red)}
+
+  .login{width:min(400px,100%);margin:60px auto;background:var(--panel);border:1px solid var(--line2);border-radius:6px;padding:22px}
+  .login h2{margin:0 0 4px;font-size:18px}
+  .login .sub{font-size:11.5px;color:var(--dim);margin-bottom:16px}
+  .f{margin-bottom:12px}
+  .f label{display:block;font-size:11px;color:var(--dimmer);margin-bottom:5px}
+  .f input::placeholder{color:#A7A7A1}
+  .f input{width:100%;background:var(--panel3);border:1px solid var(--line);border-radius:3px;padding:8px 10px;color:var(--ink);font-size:13px;outline:0}
+  .rowline{display:flex;gap:8px}
+  .rowline input{flex:1}
+  .btn2{border:1px solid rgba(111,227,168,.5);color:var(--mint);border-radius:3px;padding:8px 12px;font-size:12px;font-weight:600;white-space:nowrap}
+  .hint{font-size:11px;color:var(--sand);margin-top:8px}
+  .go{width:100%;margin-top:8px;padding:10px;border-radius:3px;background:var(--mint);color:#04120C;font-weight:700;font-size:13px}
+  [hidden]{display:none!important}
+  #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--mint);color:#04120C;
+    font-size:12px;font-weight:700;padding:9px 16px;border-radius:3px;opacity:0;transition:opacity .2s;pointer-events:none}
+  #toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="logo"><i></i>商务审核台 <span>第七场 · 内部</span></div>
+    <div class="r"><span class="badge">仅商务可见</span><a href="../index.html">返回前台 →</a></div>
+  </div>
+</header>
+
+<div class="wrap pad">
+  <section id="login">
+    <div class="login">
+      <h2>商务登录</h2>
+      <div class="sub">商务账号由后台发放，<b>与用户手机号完全独立</b>：这里登录不了用户账号，用户也进不来后台。</div>
+      <div class="f"><label>商务账号</label><input id="username" value="admin" autocomplete="username"></div>
+      <div class="f"><label>密码</label><input id="password" type="password" placeholder="初始密码见服务端日志" autocomplete="current-password"></div>
+      <div class="hint">商务账号与用户手机号是两套体系，互不通用。首次登录后请立即改密码。</div>
+      <button class="go" id="dologin">进入审核台</button>
+    </div>
+  </section>
+
+  <section id="console" hidden>
+    <h1>待办审核</h1>
+    <p class="lede">入驻申请与作品都在这里处理。通过后即时生效，驳回必须写理由（对方能看到）。</p>
+
+    <div class="tabs" id="tabs">
+      <button class="tab" data-status="pending" aria-pressed="true">待审 <b id="cPending"></b></button>
+      <button class="tab" data-status="passed" aria-pressed="false">已通过 <b id="cPassed"></b></button>
+      <button class="tab" data-status="rejected" aria-pressed="false">已驳回 <b id="cRejected"></b></button>
+    </div>
+
+    <h2 class="sec">入驻申请</h2>
+    <div id="profiles"></div>
+
+    <h2 class="sec">作品上架</h2>
+    <div id="cases"></div>
+
+    <h2 class="sec">保证金</h2>
+    <div id="deposits"></div>
+
+    <h2 class="sec">对账</h2>
+    <div id="recSummary"></div>
+    <div class="item" style="display:flex;gap:8px;align-items:center">
+      <input id="recDate" type="date" class="note" style="max-width:180px">
+      <button class="ok" id="recBtn">查这一天</button>
+    </div>
+    <div id="recBody"></div>
+  </section>
+</div>
+<div id="toast"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+let token = localStorage.getItem('scene07_admin');
+let curStatus = 'pending';
+
+function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 1600); }
+async function api(path, opts = {}){
+  const headers = Object.assign({ 'content-type': 'application/json' }, opts.headers || {});
+  if (token) headers.authorization = 'Bearer ' + token;
+  const r = await fetch(path, Object.assign({}, opts, { headers }));
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+  return j;
+}
+const money = (n) => '¥' + Number(n || 0).toLocaleString('zh-CN');
+const fmtTime = (s) => (s || '').slice(0, 16).replace('T', ' ');
+
+async function doLogin(){
+  const username = $('#username').value.trim(), password = $('#password').value;
+  try {
+    if (!username || !password) return toast('账号和密码都要填');
+    const j = await api('/api/staff/login', { method:'POST', body: JSON.stringify({ username, password }) });
+    token = j.token; localStorage.setItem('scene07_admin', token);
+    $('#login').hidden = true; $('#console').hidden = false;
+    load(); loadDepositsAdmin(); loadReconcile();
+  } catch (e) { toast('登录失败：' + e.message); }
+}
+
+function profileCard(p){
+  const st = curStatus === 'pending' ? '' : (p.status === 'passed' ? '<span class="st pass">已通过</span>' : '<span class="st rej">已驳回</span>');
+  return `<div class="item">
+    <h3>${p.name} <span class="chip ${p.kind === 'company' ? 'co' : 'solo'}">${p.kind === 'company' ? '企业' : '个人'}</span>${st}</h3>
+    <div class="meta">${p.user || '—'} · ${p.phone || ''} · 提交于 ${fmtTime(p.created)}${p.reviewer ? ' · 审核人 ' + p.reviewer : ''}</div>
+    <div class="facts">
+      ${p.kind === 'company'
+        ? `<span>营业执照 <b>${p.licenseNo || '未填'}</b></span>
+           <span>对公账户 <b>${p.bank || '未填'}</b></span>
+           <span>开票 <b>${p.invoiceReady ? '可开' : '不可'}</b></span>`
+        : `<span>身份信息 <b>${p.realname ? '已实名' : '未实名'}</b></span>
+           <span>收款账户 <b>${p.bank || '未填'}</b></span>
+           <span>接单等级 <b>L1（新手）</b></span>`}
+      <span>实名 <b>${p.realname ? '已核' : '未核'}</b></span>
+      <span>保证金 <b>${money(p.deposit)}</b></span>
+    </div>
+    ${curStatus === 'pending' ? `<div class="acts">
+        <input class="note" id="np-${p.id}" placeholder="驳回理由（通过时可留空）">
+        <button class="no" data-pact="reject" data-pid="${p.id}">驳回</button>
+        <button class="ok" data-pact="pass" data-pid="${p.id}">通过</button>
+      </div>` : (p.note ? `<div class="meta" style="margin-top:8px">审核意见：${p.note}</div>` : '')}
+  </div>`;
+}
+
+function caseCard(c){
+  const st = curStatus === 'pending' ? '' : (c.status === 'published' ? '<span class="st pass">已上架</span>' : '<span class="st rej">已驳回</span>');
+  const vid = (c.videoSrc || '').replace(/^\.?\//, '');
+  const playable = vid && !/^https?:/.test(vid);
+  const shots = (c.shots || []).filter(s => s && s.img).slice(0, 8);
+  return `<div class="item">
+    <h3>${c.title} ${st}</h3>
+    <div class="meta">${c.owner || '—'} · ${c.cat} · ${c.dur} · ${c.shotsN} 镜 · 提交于 ${fmtTime(c.created)}</div>
+    <div class="media">
+      ${playable
+        ? `<video src="/${vid}" controls preload="metadata" poster="${c.cover ? '/' + String(c.cover).replace(/^\/+/, '') : ''}"></video>`
+        : (c.cover ? `<img src="/${String(c.cover).replace(/^\/+/, '')}" alt="">` : '<div class="novideo">没有成片文件</div>')}
+      <div class="side">
+        ${c.cover && playable ? `<img class="cover" src="/${String(c.cover).replace(/^\/+/, '')}" alt="">` : ''}
+        <div class="facts">
+          <span>标价 <b>${money(c.price.from)}</b></span>
+          <span>含 <b>${c.price.revisions}</b> 次修改</span>
+          <span>工期 <b>${c.price.days}</b> 天</span>
+          <span>精细度 <b>${c.level}</b></span>
+        </div>
+        ${playable ? `<div class="meta" style="margin-top:6px"><a href="/${vid}" target="_blank" style="color:#6FE3A8">原片另开窗口 →</a></div>` : ''}
+      </div>
+    </div>
+    ${shots.length ? `<div class="shots">${shots.map(s => `<figure title="${s.n || ''}">
+        <img src="${String(s.img).replace(/^\/+/, '/')}" alt="">
+        <figcaption>${s.n || ''}</figcaption></figure>`).join('')}</div>` : ''}
+    ${curStatus === 'pending' ? `<div class="acts">
+        <input class="note" id="nc-${c.id}" placeholder="驳回理由（通过时可留空）">
+        <button class="no" data-cact="reject" data-cid="${c.id}">驳回</button>
+        <button class="ok" data-cact="pass" data-cid="${c.id}">通过并上架</button>
+      </div>` : (c.note ? `<div class="meta" style="margin-top:8px">审核意见：${c.note}</div>` : '')}
+  </div>`;
+}
+
+async function load(){
+  try {
+    const q = await api('/api/admin/queue?status=' + curStatus);
+    $('#profiles').innerHTML = q.profiles.length ? q.profiles.map(profileCard).join('') : '<div class="empty">没有待处理的入驻申请。</div>';
+    $('#cases').innerHTML = q.cases.length ? q.cases.map(caseCard).join('') : '<div class="empty">没有待审的作品。</div>';
+    const counts = await Promise.all(['pending','passed','rejected'].map(s => api('/api/admin/queue?status=' + s)
+      .then(r => r.profiles.length + r.cases.length).catch(() => 0)));
+    $('#cPending').textContent = counts[0];
+    $('#cPassed').textContent = counts[1];
+    $('#cRejected').textContent = counts[2];
+  } catch (e) { toast('加载失败：' + e.message); }
+}
+
+document.addEventListener('click', async (e) => {
+  const dz = e.target.closest('[data-dfreeze],[data-dunfreeze]');
+  if (dz){
+    if (dz.dataset.dfreeze) freezeDeposit(dz.dataset.dfreeze, false);
+    else freezeDeposit(dz.dataset.dunfreeze, true);
+    return;
+  }
+  const t = e.target.closest('[data-status],[data-pact],[data-cact]');
+  if (!t) return;
+  if (t.dataset.status){
+    curStatus = t.dataset.status;
+    document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.status === curStatus)));
+    load();
+    return;
+  }
+  if (t.dataset.pact){
+    const id = t.dataset.pid, note = ($('#np-' + id) || {}).value || '';
+    if (t.dataset.pact === 'reject' && !note.trim()) return toast('驳回要写理由');
+    await api('/api/admin/profiles/' + id + '/review', { method:'POST', body: JSON.stringify({ action: t.dataset.pact, note }) });
+    toast(t.dataset.pact === 'pass' ? '已通过' : '已驳回');
+    load();
+  }
+  if (t.dataset.cact){
+    const id = t.dataset.cid, note = ($('#nc-' + id) || {}).value || '';
+    if (t.dataset.cact === 'reject' && !note.trim()) return toast('驳回要写理由');
+    await api('/api/admin/cases/' + id + '/review', { method:'POST', body: JSON.stringify({ action: t.dataset.cact, note }) });
+    toast(t.dataset.cact === 'pass' ? '已上架' : '已驳回');
+    load();
+  }
+});
+
+
+$('#dologin').addEventListener('click', doLogin);
+document.addEventListener('click', (e) => { if (e.target.id === 'recBtn') loadReconcile(); });
+
+async function loadDepositsAdmin(){
+  try {
+    const r = await api('/api/admin/deposits');
+    const rows = (r.items || []).map(d => {
+      const tone = d.status === 'paid' ? 'pass' : (d.status === 'frozen' ? 'rej' : '');
+      const label = d.status === 'paid' ? '已缴纳' : (d.status === 'frozen' ? '冻结' : (d.status === 'refunded' ? '已退回' : '待缴纳'));
+      return `<div class="item">
+        <h3>${d.no} <span class="chip">${label}</span></h3>
+        <div class="meta">${(d.created || '').slice(0, 16).replace('T', ' ')}${d.paidAt ? ' · 缴纳 ' + d.paidAt.slice(0, 10) : ''}</div>
+        <div class="facts"><span>金额 <b>${money(d.amount)}</b></span>
+          <span>类型 <b>${d.kind === 'company' ? '企业' : '个人'}</b></span>
+          ${d.note ? `<span>备注 <b>${d.note}</b></span>` : ''}</div>
+        <div class="acts">
+          ${d.status === 'paid' ? `<input class="note" id="df-${d.id}" placeholder="冻结原因">
+            <button class="no" data-dfreeze="${d.id}">冻结</button>` : ''}
+          ${d.status === 'frozen' ? `<button class="ok" data-dunfreeze="${d.id}">解冻</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('deposits').innerHTML = rows || '<div class="empty">还没有保证金记录。</div>';
+  } catch (e) { toast('加载保证金失败：' + e.message); }
+}
+
+async function freezeDeposit(id, unfreeze){
+  const note = (document.getElementById('df-' + id) || {}).value || '';
+  try {
+    await api('/api/admin/deposits/' + id + '/freeze', { method: 'POST', body: JSON.stringify({ reason: note, unfreeze: !!unfreeze }) });
+    toast(unfreeze ? '已解冻' : '已冻结');
+    loadDepositsAdmin();
+  } catch (e) { toast('操作失败：' + e.message); }
+}
+
+async function loadReconcile(){
+  const day = (document.getElementById('recDate') || {}).value || '';
+  try {
+    const q = day ? '?date=' + day : '';
+    const r = await api('/api/admin/reconcile' + q);
+    const a = r.anomalies || [];
+    const rows = a.slice(0, 8).map(x => `<div class="kv" style="border-top:1px solid var(--line)">
+      <k>${x.orderNo || '—'}<br><span style="color:#7F8E87;font-size:11px">${x.type}</span></k>
+      <v style="text-align:right">${x.amount ? money(x.amount) : '—'}<br><span style="color:#E4572E;font-size:11px">${x.note}</span></v>
+    </div>`).join('') || '<div class="empty">没有异常，账目平。</div>';
+
+    document.getElementById('recSummary').innerHTML = `
+      <div class="facts" style="gap:22px;margin-bottom:12px">
+        <span>支付 <b>${r.paid.count}</b> 笔</span>
+        <span>客户实付 <b>${money(r.paid.gross)}</b></span>
+        <span>平台费 <b>${money(r.paid.platformFee)}</b></span>
+        <span>创作者净额 <b>${money(r.paid.creatorNet)}</b></span>
+        <span>退款 <b>${money(r.paid.refunded)}</b></span>
+        <span>回调 <b>${r.notifyCount}</b> 条</span>
+        <span>待打款 <b>${money(r.settlements.payoutDue)}</b></span>
+      </div>
+      <div style="font-size:11px;color:#7F8E87;margin-bottom:8px">${r.date} · 差异 ${a.length} 项</div>`;
+    const more = a.length > 8 ? ('<div class="empty">共 ' + a.length + ' 项，只显示前 8 项</div>') : '';
+    document.getElementById('recBody').innerHTML = rows + more;
+  } catch (e) { toast('对账失败：' + e.message); }
+}
+
+(async function boot(){
+  if (!token) return;
+  try {
+    const me = await api('/api/staff/me');
+    $('#login').hidden = true; $('#console').hidden = false;
+    load();
+  } catch (e) { token = null; localStorage.removeItem('scene07_admin'); }
+})();
+</script>
+</body>
+</html>
